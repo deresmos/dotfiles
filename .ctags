@@ -1,0 +1,66 @@
+--exclude=.*
+--exclude=*.pyc
+--exclude=*.swp
+--exclude=*.back
+--exclude=*[._-]*min.*
+--exclude=log
+
+--append=no
+--sort=no
+
+--langdef=mycss
+--langmap=mycss:.css
+--regex-mycss=/^[ \t]*\.([a-zA-Z0-9_-]+)/\1/c,class,classes/
+--regex-mycss=/^[ \t]*#([a-zA-Z0-9_-]+)/\1/i,id,identities/
+--regex-mycss=/^[ \t]*(([a-zA-Z0-9_-]+[ \t\n,]+)+)\{/\1/e,element,elements/
+--regex-mycss=/^[ \t]*(([a-zA-Z0-9_:.#()["'=~|\^$*, -]|])+)(,|[ \t]*\{)$/\1/s,selector,selectors/
+--regex-mycss=/^[ \t]*(@\w+)\s/\1/@,@,@s/
+
+--langdef=myphp
+--langmap=myphp:.php
+--regex-myphp=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)/\1/d,const definition,const definitions/
+--regex-myphp=/^[ \t]*(public|private|protected)[ \t]+function[ \t]+([a-zA-Z0-9_]+)/\2/m,method,methods/
+--regex-myphp=/^[ \t]*(public|private|protected)[ \t]+\$([a-zA-Z0-9_]+)/\2/p,property,properties/
+--regex-myphp=/^\W*function[ \t]([a-zA-Z0-9_]+)/\1/f,function,functions/
+--regex-myphp=/do_action[ \t]*\([ \t]*['"]([a-zA-Z0-9_]+)/\1/w,wordpress hook,wordpress hooks/
+
+--langdef=myjs
+--langmap=myjs:.js
+
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*function[ \t]*\(/\5/f,function,functions/
+--regex-myjs=/function[ \t]+([A-Za-z0-9_$]+)[ \t]*\([^)]*\)/\1/f,function,functions/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*\[/\5/a,array,arrays/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*[^"]'[^']*/\5/s,string,strings/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*(true|false)/\5/b,boolean,booleans/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*[0-9]+/\5/n,number,numbers/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*=[ \t]*.+([,;=]|$)/\5/v,variable,variables/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*([A-Za-z0-9_$]+)[ \t]*[ \t]*([,;]|$)/\5/v,variable,variables/
+--regex-myjs=/(,|(;|^)[ \t]*(var|let|([A-Za-z_$][A-Za-z0-9_$.]+\.)*))[ \t]*\$([A-Za-z0-9_$]+)[ \t]*[ \t]*([,;]|$)/\5/j,jquery/
+--regex-myjs=/[ \t]*((\$|jQuery)\([a-zA-Z'"_]([a-zA-Z0-9_:.#()["'=~|\^$*, -]|\])+[a-zA-Z'"_]\))(\.|[,;= \t])/\1/j,jquery/
+--regex-myjs=/(.*function[ \t]*\(.*$)/\1/z,function,functions/
+
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*function[ \t]*\(/\2/f,function/
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*\[/\2/a,array/
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*[^"]'[^']*/\2/s,string/
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*(true|false)/\2/b,boolean/
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*[0-9]+/\2/n,number/
+--regex-myjs=/(,|^)[ \t]*([A-Za-z_$][A-Za-z0-9_$]+)[ \t]*:[ \t]*[^=]+([,;]|$)/\2/v,variable/
+
+--langdef=myhtml
+--langmap=myhtml:.html.xhtml
+--regex-myhtml=/[ \t]+id="([a-zA-Z0-9_-]+)"/\1/i,id,ids/
+--regex-myhtml=/[ \t]+class="([a-zA-Z0-9_-]+)"/\1/c,class,classes/
+
+--langmap=asp:
+--langdef=myvbs
+--langmap=myvbs:.wsf.asp.inc.vbs
+--regex-myvbs=/^[ \t]*(const|Const)[ \t]+([a-zA-Z0-9_]+)/\2/d,constant,constants/
+--regex-myvbs=/^[ \t]*(dim|Dim)[ \t]+([a-zA-Z0-9_]+)/\2/v,variable,variables/
+--regex-myvbs=/^[ \t]*(function|Function)[ \t]+([a-zA-Z0-9_]+)/\2/f,function,function/
+--regex-myvbs=/^[ \t]*(sub|Sub)[ \t]+([a-zA-Z0-9_]+)/\2/s,subroutine,subroutines/
+--regex-myvbs=/^[ \t]*(function|Function)[ \t]+OnDraw_([a-zA-Z0-9_]+)/\2/r,ondraw,ondraws/
+--regex-myvbs=/^[ \t]*(function|Function)[ \t]+OnCommand_([a-zA-Z0-9_]+)/\2/c,oncommand,oncommands/
+
+--langdef=mysql
+--langmap=mysql:.sql
+--regex-mysql=/^(create|CREATE)[ \t]+PROCEDURE[ \t]+\[dbo\]\.\[([a-zA-Z0-9_]+)\]/\2/p,procedure,procedures/
