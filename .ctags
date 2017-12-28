@@ -63,3 +63,7 @@
 
 --langmap=sql:.sql
 --regex-sql=/^(create|CREATE)[ \t]+(PROCEDURE|procedure|proc|PROC)[ \t]+\[dbo\]\.\[([a-zA-Z0-9_]+)\]/\3/p,procedure,procedures/
+
+--langdef=ini
+--langmap=ini:.ini
+--regex-ini=/^\[(.+)\]$/\1/s,section,sections/
