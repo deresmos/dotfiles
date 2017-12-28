@@ -61,6 +61,5 @@
 --regex-myvbs=/^[ \t]*(function|Function)[ \t]+OnDraw_([a-zA-Z0-9_]+)/\2/r,ondraw,ondraws/
 --regex-myvbs=/^[ \t]*(function|Function)[ \t]+OnCommand_([a-zA-Z0-9_]+)/\2/c,oncommand,oncommands/
 
---langdef=mysql
---langmap=mysql:.sql
---regex-mysql=/^(create|CREATE)[ \t]+PROCEDURE[ \t]+\[dbo\]\.\[([a-zA-Z0-9_]+)\]/\2/p,procedure,procedures/
+--langmap=sql:.sql
+--regex-sql=/^(create|CREATE)[ \t]+(PROCEDURE|procedure|proc|PROC)[ \t]+\[dbo\]\.\[([a-zA-Z0-9_]+)\]/\3/p,procedure,procedures/
