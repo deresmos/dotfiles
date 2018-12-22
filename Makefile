@@ -18,6 +18,7 @@ ctags: .ctags
 polybar: FORCE
 	cd polybar && python make-polybar-config.py
 	@DIR_PATH=$(HOME)/.config/polybar && $(CREATE_DIR)
+	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
 	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
 
 link: FORCE
