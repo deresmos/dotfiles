@@ -8,15 +8,23 @@ install:
 	@$(MAKE) all
 	@echo '-----  END: Created all symbolic link -----'
 
-all: ctags
+all: ctags polybar
 
 ctags: .ctags
 	@$(LINK_S_CMD)
 	@DIR_PATH=$(HOME)/.ctags.d && $(CREATE_DIR)
 	@$(LINK_CMD) DEST='.ctags.d/conf.ctags'
 
-link:
+polybar: FORCE
+	cd polybar && python make-polybar-config.py
+	@DIR_PATH=$(HOME)/.config/polybar && $(CREATE_DIR)
+	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
+
+link: FORCE
 	@[ -z $(SRC) ] || (SRC_PATH=$(CURDIR)/$(SRC) && \
 		DEST_PATH=$(HOME)/$(DEST) && \
 		ln -sf $$SRC_PATH $$DEST_PATH && \
 		echo 'Created symbolic link:' $$SRC_PATH '==>' $$DEST_PATH)
+
+FORCE:
+.PHONY: FORCE

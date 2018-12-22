@@ -1,0 +1,349 @@
+;==========================================================
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/jaagr/polybar
+;
+;   The README contains alot of information
+;
+;==========================================================
+
+[var]
+eth-interface =
+wlan-interface =
+net-interface =
+
+[colors]
+background = #222
+background-alt = #444
+foreground = #dfdfdf
+foreground-alt = #555
+primary = #ffb52a
+secondary = #e60053
+alert = #bd2c40
+
+status-green = #55aa55
+status-warning = #f5a70a
+status-alert = #ff5555
+
+focus-back = #88c488
+focus-fore = #000
+
+download = #55aa55
+upload = #ff5555
+
+disable = #777
+
+[bar/main]
+enable-ipc = true
+monitor = ${env:MONITOR:}
+width = 100%
+height = 24
+bottom= true
+fixed-center = false
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+padding-right = 2
+
+module-margin-right = 1
+
+font-0 = ricty:size=12:pixelsize=12:fontformat=truetype;3
+font-1 = ricty:size=6:heavy:fontformat=truetype;3
+font-2 = Font Awesome 5 Free:style=Regular:size=15:pixelsize=10;3
+font-3 = Font Awesome 5 Free:style=Solid:size=15:pixelsize=10;3
+font-4 = Font Awesome 5 Brands:style=Regular:size=15:pixelsize=10;3
+font-5 = ricty:size=12:pixelsize=18:fontformat=truetype;3
+
+
+modules-left = i3
+modules-center =
+modules-right = xbacklight pulseaudio-input pulseaudio sep fs-root fs-home sep memory cpu battery nvidia-gpu nvidia-gpu-memory sep wlan eth sep downspeed upspeed sep date
+
+tray-position = right
+tray-padding = 1
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:50:...%
+
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = false
+enable-click = false
+enable-scroll = false
+pin-workspaces = true
+
+label-mode-padding = 1
+label-mode-foreground = #000
+label-mode-background = ${colors.primary}
+
+label-focused = %index%
+label-focused-background = ${colors.focus-back}
+label-focused-foreground = ${colors.focus-fore}
+label-focused-padding = 2
+
+label-unfocused = %index%
+label-unfocused-padding = 1
+
+label-visible = %index%
+label-visible-background = ${colors.disable}
+label-visible-padding = 2
+
+label-urgent = %index%
+label-urgent-padding = 1
+
+
+[module/xbacklight]
+type = internal/xbacklight
+
+label = %percentage%%
+format = <label>
+format-prefix = " "
+
+[module/cpu]
+type = internal/cpu
+interval = 3
+format-prefix = ""
+
+format = <label> <ramp-coreload>
+label = %percentage:2%%
+
+ramp-coreload-0 = ▁
+ramp-coreload-0-foreground = ${colors.status-green}
+ramp-coreload-1 = ▂
+ramp-coreload-1-foreground = ${colors.status-green}
+ramp-coreload-2 = ▃
+ramp-coreload-2-foreground = ${colors.status-green}
+ramp-coreload-3 = ▄
+ramp-coreload-3-foreground = ${colors.status-green}
+ramp-coreload-4 = ▅
+ramp-coreload-4-foreground = ${colors.status-warning}
+ramp-coreload-5 = ▆
+ramp-coreload-5-foreground = ${colors.status-warning}
+ramp-coreload-6 = ▇
+ramp-coreload-6-foreground = ${colors.status-alert}
+ramp-coreload-7 = █
+ramp-coreload-7-foreground = ${colors.status-alert}
+
+
+[module/memory]
+type = internal/memory
+format-prefix = " "
+format-prefix-foreground = #00B66E
+label = %percentage_used%%
+format = <label> <ramp-used>
+
+ramp-used-0 = ▁
+ramp-used-0-foreground = ${colors.status-green}
+ramp-used-1 = ▂
+ramp-used-1-foreground = ${colors.status-green}
+ramp-used-2 = ▃
+ramp-used-2-foreground = ${colors.status-green}
+ramp-used-3 = ▄
+ramp-used-3-foreground = ${colors.status-green}
+ramp-used-4 = ▅
+ramp-used-4-foreground = ${colors.status-warning}
+ramp-used-5 = ▆
+ramp-used-5-foreground = ${colors.status-warning}
+ramp-used-6 = ▇
+ramp-used-6-foreground = ${colors.status-alert}
+ramp-used-7 = █
+ramp-used-7-foreground = ${colors.status-alert}
+
+[module/wlan]
+type = internal/network
+interface = ${var.wlan-interface}
+interval = 60.0
+
+format-connected = <ramp-signal> <label-connected>
+label-connected = %essid% (%local_ip%)
+
+format-disconnected = no wifi
+
+ramp-signal-0 = 
+ramp-signal-0-foreground = ${colors.status-alert}
+ramp-signal-1 = 
+ramp-signal-1-foreground = ${colors.status-warning}
+ramp-signal-2 = 
+ramp-signal-2-foreground = ${colors.status-green}
+ramp-signal-3 = 
+ramp-signal-3-foreground = ${colors.status-green}
+ramp-signal-4 = 
+ramp-signal-4-foreground = ${colors.status-green}
+
+[module/eth]
+type = internal/network
+interface = ${var.eth-interface}
+interval = 60.0
+
+label-connected = %local_ip%
+format-connected = <label-connected>
+format-connected-prefix = " "
+
+format-disconnected = no lan
+
+
+[module/downspeed]
+type = internal/network
+interface = ${var.net-interface}
+interval = 5.0
+accumulate-stats = true
+
+label-connected = %downspeed:4%
+format-connected-prefix = " "
+format-connected-prefix-foreground = ${colors.download}
+
+[module/upspeed]
+type = internal/network
+interface = ${var.net-interface}
+interval = 5.0
+accumulate-stats = true
+
+label-connected = %upspeed:4%
+format-connected-prefix = " "
+format-connected-prefix-foreground = ${colors.upload}
+
+[module/date]
+type = internal/date
+interval = 1
+
+date = %m/%d
+date-alt = %Y/%m/%d
+
+time = %H:%M
+time-alt = %H:%M:%S
+
+format-prefix = " "
+
+label = %date% %time%
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume> <label-volume>
+label-volume = %percentage%%
+
+label-muted = 
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+ramp-volume-3 = 
+ramp-volume-4 = 
+
+
+[module/pulseaudio-input]
+type = custom/script
+exec = pulseaudio-rofi --input_volume_listener
+exec-if = pulseaudio-rofi
+tail = true
+click-right = pulseaudio-rofi --input
+click-left = pulseaudio-rofi --mute_source
+
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 98
+
+format-charging = <animation-charging> <label-charging>
+
+label-discharging = %percentage%%
+format-discharging = <ramp-capacity> <label-discharging>
+
+label-full = %percentage%%
+
+ramp-capacity-0 = 
+ramp-capacity-0-foreground = ${colors.status-alert}
+ramp-capacity-1 = 
+ramp-capacity-1-foreground = ${colors.status-warning}
+ramp-capacity-2 = 
+ramp-capacity-2-foreground = ${colors.status-green}
+ramp-capacity-3 = 
+ramp-capacity-3-foreground = ${colors.status-green}
+ramp-capacity-4 = 
+ramp-capacity-4-foreground = ${colors.status-green}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-foreground = ${colors.status-warning}
+animation-charging-framerate = 1000
+
+
+[module/temperature]
+type = internal/temperature
+thermal-zone = 0
+warn-temperature = 60
+
+format = <ramp> <label>
+format-underline = #f50a4d
+format-warn = <ramp> <label-warn>
+format-warn-underline = ${self.format-underline}
+
+label = %temperature-c%
+label-warn = %temperature-c%
+label-warn-foreground = ${colors.secondary}
+
+ramp-0 = 
+ramp-1 = 
+ramp-2 = 
+ramp-foreground = ${colors.foreground-alt}
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+[module/fs-root]
+type = internal/fs
+interval = 60
+mount-0 = /
+label-mounted = %free%
+format-mounted-prefix = " "
+label-unmounted =
+
+click-left = pcmanfm
+
+[module/fs-home]
+type = internal/fs
+interval = 60
+mount-0 = /home
+label-mounted = %free%
+format-mounted-prefix = " "
+label-unmounted =
+
+[module/sep]
+type = custom/text
+content = "%{T6}|%{T-}"
+content-foreground = ${colors.disable}
+
+[module/nvidia-gpu]
+type = custom/script
+exec = nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | awk '{ print " %{F#777}%{F-}",""$1"%"}'
+exec-if = nvidia-smi
+tail = true
+
+[module/nvidia-gpu-memory]
+type = custom/script
+exec = nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits | awk '{ print ""$1"%"}'
+exec-if = nvidia-smi
+tail = true
+
+; vim:ft=dosini
