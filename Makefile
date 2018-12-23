@@ -16,7 +16,10 @@ ctags: .ctags
 	@$(LINK_CMD) DEST='.ctags.d/conf.ctags'
 
 polybar: FORCE
+	curl -L https://github.com/deresmos/polybar-scripts/raw/master/polybar-scripts/pulseaudio-rofi/pulseaudio-rofi.sh -o polybar/pulseaudio-rofi.sh \
+		&& chmod a+x polybar/pulseaudio-rofi.sh
 	cd polybar && python make-polybar-config.py
+	sudo ln -sf $(CURDIR)/polybar/pulseaudio-rofi.sh /usr/local/bin/pulseaudio-rofi
 	@DIR_PATH=$(HOME)/.config/polybar && $(CREATE_DIR)
 	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
 	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
