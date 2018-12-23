@@ -58,7 +58,7 @@ font-5 = ricty:size=12:pixelsize=18:fontformat=truetype;3
 
 modules-left = i3
 modules-center =
-modules-right = xbacklight pulseaudio-input pulseaudio sep fs-root fs-home sep memory cpu battery nvidia-gpu nvidia-gpu-memory sep wlan eth sep downspeed upspeed sep date
+modules-right = xbacklight uvcvideo pulseaudio-input pulseaudio sep fs-root fs-home sep memory cpu battery nvidia-gpu nvidia-gpu-memory sep wlan eth sep downspeed upspeed sep date
 
 tray-position = right
 tray-padding = 1
@@ -345,5 +345,12 @@ type = custom/script
 exec = nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits | awk '{ print ""$1"%"}'
 exec-if = nvidia-smi
 tail = true
+
+[module/uvcvideo]
+type = custom/script
+exec = ~/.config/polybar/uvcvideo.sh
+exec-if = ~/.config/polybar/uvcvideo.sh
+tail = true
+click-left = ~/.config/polybar/uvcvideo.sh --toggle
 
 ; vim:ft=dosini
