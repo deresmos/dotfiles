@@ -25,6 +25,7 @@ polybar: FORCE
 	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
 
 rofi: FORCE
+	@DIR_PATH=$(HOME)/.config/rofi && $(CREATE_DIR)
 	@$(LINK_CMD) SRC='rofi/config' DEST='.config/rofi/config'
 
 link: FORCE
