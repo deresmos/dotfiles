@@ -24,6 +24,9 @@ polybar: FORCE
 	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
 	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
 
+rofi: FORCE
+	@$(LINK_CMD) SRC='rofi/config' DEST='.config/rofi/config'
+
 link: FORCE
 	@[ -z $(SRC) ] || (SRC_PATH=$(CURDIR)/$(SRC) && \
 		DEST_PATH=$(HOME)/$(DEST) && \

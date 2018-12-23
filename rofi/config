@@ -1,0 +1,18 @@
+rofi.combi-modi: drun,ssh
+rofi.modi: window,combi,run
+rofi.sidebar-mode: true
+rofi.hide-scrollbar: true
+rofi.matching: fuzzy
+rofi.theme: /usr/share/rofi/themes/Arc-Dark.rasi
+rofi.display-combi: drun
+
+rofi.kb-remove-to-eol:
+rofi.kb-row-tab:
+
+rofi.kb-accept-entry: Control+m,Return
+rofi.kb-accept-alt: Control+M,Shift+Return
+rofi.kb-row-up: Control+k,Up
+rofi.kb-row-down: Control+j,Down
+rofi.kb-mode-next: Tab,Control+o
+rofi.kb-mode-previous: Control+Tab,Control+i
+rofi.kb-cancel: Escape,Control+bracketleft,Control+c
