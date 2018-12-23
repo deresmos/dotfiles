@@ -1,11 +1,27 @@
 #! /bin/bash
 
 activate_uvcvideo() {
-  gksudo -u root 'modprobe uvcvideo'
+  error=$(modprobe -n uvcvideo 2>&1)
+  if [[ -z $error ]]; then
+    # Success dryrun activate
+    gksudo -u root 'modprobe uvcvideo'
+    exit 0
+  else
+    # Fail dryrun activate
+    zenity --error --width=200 --text="$error"
+  fi
 }
 
 deactivate_uvcvideo() {
-  gksudo -u root 'modprobe -r uvcvideo'
+  error=$(modprobe -n -r uvcvideo 2>&1)
+  if [[ -z $error ]]; then
+    # Success dryrun deactivate
+    gksudo -u root 'modprobe -r uvcvideo'
+    exit 0
+  else
+    # Fail dryrun deactivate
+    zenity --error --width=200 --text="$error"
+  fi
 }
 
 activate_toggle() {
