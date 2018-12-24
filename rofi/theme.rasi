@@ -1,0 +1,21 @@
+@theme "Arc-Dark"
+
+#window {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#scrollbar {
+  handle-width: 0;
+}
+
+#inputbar {
+  children: [ textbox-prompt-colon, entry, case-indicator ];
+}
+
+#textbox-prompt-colon {
+  str: ">";
+  margin: 0 0.4em 0 0.4em;
+  text-color: @border-color;
+}

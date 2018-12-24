@@ -8,7 +8,7 @@ install:
 	@$(MAKE) all
 	@echo '-----  END: Created all symbolic link -----'
 
-all: ctags polybar
+all: ctags polybar rofi
 
 ctags: .ctags
 	@$(LINK_S_CMD)
@@ -31,6 +31,7 @@ polybar-init: FORCE
 rofi: FORCE
 	@DIR_PATH=$(HOME)/.config/rofi && $(CREATE_DIR)
 	@$(LINK_CMD) SRC='rofi/config' DEST='.config/rofi/config'
+	@$(LINK_CMD) SRC='rofi/theme.rasi' DEST='.config/rofi/theme.rasi'
 
 link: FORCE
 	@[ -z $(SRC) ] || (SRC_PATH=$(CURDIR)/$(SRC) && \

@@ -1,10 +1,13 @@
 rofi.combi-modi: drun,ssh
 rofi.modi: window,combi,run
 rofi.sidebar-mode: true
-rofi.hide-scrollbar: true
-rofi.matching: fuzzy
-rofi.theme: /usr/share/rofi/themes/Arc-Dark.rasi
+rofi.theme: ~/.config/rofi/theme.rasi
 rofi.display-combi: drun
+rofi.display-drun:
+rofi.show-icons: true
+
+rofi.width: 100
+rofi.location: 1
 
 rofi.kb-remove-to-eol:
 rofi.kb-row-tab:
