@@ -14,15 +14,15 @@
 --regex-mycss=/^[ \t]*#([a-zA-Z0-9_-]+)/\1/i,id,identities/
 --regex-mycss=/^[ \t]*(([a-zA-Z0-9_-]+[ \t\n,]+)+)\{/\1/e,element,elements/
 --regex-mycss=/^[ \t]*(([a-zA-Z0-9_:.#()["'=~|\^$*, -]|])+)(,|[ \t]*\{)$/\1/s,selector,selectors/
---regex-mycss=/^[ \t]*(@\w+)\s/\1/@,@,@s/
+--regex-mycss=/^[ \t]*(@\w+)\s/\1/a,a,as/
 
 --langdef=myphp
 --langmap=myphp:.php
---regex-myphp=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)/\1/d,const definition,const definitions/
+--regex-myphp=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)/\1/d,definition,definitions/
 --regex-myphp=/^[ \t]*(public|private|protected)[ \t]+function[ \t]+([a-zA-Z0-9_]+)/\2/m,method,methods/
 --regex-myphp=/^[ \t]*(public|private|protected)[ \t]+\$([a-zA-Z0-9_]+)/\2/p,property,properties/
 --regex-myphp=/^\W*function[ \t]([a-zA-Z0-9_]+)/\1/f,function,functions/
---regex-myphp=/do_action[ \t]*\([ \t]*['"]([a-zA-Z0-9_]+)/\1/w,wordpress hook,wordpress hooks/
+--regex-myphp=/do_action[ \t]*\([ \t]*['"]([a-zA-Z0-9_]+)/\1/h,hook,hooks/
 
 --langdef=myjs
 --langmap=myjs:.js
