@@ -10,7 +10,7 @@ install:
 
 all: ctags polybar rofi
 
-ctags: .ctags
+ctags: ctags/.ctags
 	@$(LINK_S_CMD)
 	@DIR_PATH=$(HOME)/.ctags.d && $(CREATE_DIR)
 	@$(LINK_CMD) DEST='.ctags.d/conf.ctags'
