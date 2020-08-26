@@ -1,17 +1,18 @@
 MAKE = make -s
 LINK_CMD = $(MAKE) link SRC=$<
-LINK_S_CMD = $(LINK_CMD) DEST=$<
-CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo 'Created directory')
+CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 
 install:
 	@echo '----- START: Create all symbolic link -----'
-	@$(MAKE) all
+	@$(MAKE) common
 	@echo '-----  END: Created all symbolic link -----'
 
-all: ctags polybar rofi
+common: ctags
+
+linux: polybar rofi
 
 ctags: ctags/.ctags
-	@$(LINK_S_CMD)
+	@$(LINK_CMD) DEST='.ctags'
 	@DIR_PATH=$(HOME)/.ctags.d && $(CREATE_DIR)
 	@$(LINK_CMD) DEST='.ctags.d/conf.ctags'
 

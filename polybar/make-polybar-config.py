@@ -1,3 +1,4 @@
+import sys
 from configparser import ConfigParser
 from pathlib import Path
 
@@ -41,6 +42,9 @@ def get_eth_interface():
 
 
 if __name__ == '__main__':
+    if not Path('/sys/class/net').exists():
+        sys.exit(1)
+
     config = ConfigParser()
     path = './config'
     config.read_file(open(path, 'r', encoding='utf-8'))
