@@ -27,7 +27,7 @@ ctags: ctags/.ctags
 polybar: polybar/pulseaudio-rofi.sh FORCE
 	@$(PRE_ECHO)
 	@$(LINK_CONFIG) SRC='polybar/uvcvideo.sh'
-	@DIR_PATH=$(HOME)/.config/polybar && $(CREATE_DIR)
+	@DIR_PATH=$(XDG_CONFIG_HOME)/polybar && $(CREATE_DIR)
 	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
 	cd polybar && python make-polybar-config.py
 	@$(LINK_CONFIG) SRC='polybar/config'
@@ -40,7 +40,7 @@ polybar/pulseaudio-rofi.sh:
 # rofi
 rofi: FORCE
 	@$(PRE_ECHO)
-	@DIR_PATH=$(HOME)/.config/rofi && $(CREATE_DIR)
+	@DIR_PATH=$(XDG_CONFIG_HOME)/rofi && $(CREATE_DIR)
 	@$(LINK_CONFIG) SRC='rofi/config'
 	@$(LINK_CONFIG) SRC='rofi/theme.rasi'
 
