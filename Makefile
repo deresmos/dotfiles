@@ -1,6 +1,7 @@
 PRE_ECHO = echo '==> $@'
 MAKE = make -s
 LINK_CMD = $(MAKE) link SRC=$<
+LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 
 FORCE:
@@ -18,18 +19,18 @@ linux: common polybar rofi
 # ctags
 ctags: ctags/.ctags
 	@$(PRE_ECHO)
-	@$(LINK_CMD) DEST='.ctags'
+	@$(LINK_CMD) DEST='$(HOME)/.ctags'
 	@DIR_PATH=$(HOME)/.ctags.d && $(CREATE_DIR)
-	@$(LINK_CMD) DEST='.ctags.d/conf.ctags'
+	@$(LINK_CMD) DEST='$(HOME)/.ctags.d/conf.ctags'
 
 # polybar
 polybar: polybar/pulseaudio-rofi.sh FORCE
 	@$(PRE_ECHO)
-	@$(LINK_CMD) SRC='polybar/uvcvideo.sh' DEST='.config/polybar/uvcvideo.sh'
+	@$(LINK_CONFIG) SRC='polybar/uvcvideo.sh'
 	@DIR_PATH=$(HOME)/.config/polybar && $(CREATE_DIR)
 	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
 	cd polybar && python make-polybar-config.py
-	@$(LINK_CMD) SRC='polybar/.config' DEST='.config/polybar/config'
+	@$(LINK_CONFIG) SRC='polybar/config'
 
 polybar/pulseaudio-rofi.sh:
 	curl -L https://github.com/deresmos/polybar-scripts/raw/master/polybar-scripts/pulseaudio-rofi/pulseaudio-rofi.sh -o polybar/pulseaudio-rofi.sh \
@@ -40,12 +41,15 @@ polybar/pulseaudio-rofi.sh:
 rofi: FORCE
 	@$(PRE_ECHO)
 	@DIR_PATH=$(HOME)/.config/rofi && $(CREATE_DIR)
-	@$(LINK_CMD) SRC='rofi/config' DEST='.config/rofi/config'
-	@$(LINK_CMD) SRC='rofi/theme.rasi' DEST='.config/rofi/theme.rasi'
+	@$(LINK_CONFIG) SRC='rofi/config'
+	@$(LINK_CONFIG) SRC='rofi/theme.rasi'
 
 # utils
 link: FORCE
 	@[ -z $(SRC) ] || (SRC_PATH=$(CURDIR)/$(SRC) && \
-		DEST_PATH=$(HOME)/$(DEST) && \
+		DEST_PATH=$(DEST) && \
 		ln -sf $$SRC_PATH $$DEST_PATH && \
 		echo 'Created symbolic link:' $$SRC_PATH '==>' $$DEST_PATH)
+
+link-config: FORCE
+	make -s link SRC=$(SRC) DEST=$(XDG_CONFIG_HOME)/$(SRC)

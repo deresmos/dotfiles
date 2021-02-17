@@ -46,11 +46,11 @@ if __name__ == '__main__':
         sys.exit(1)
 
     config = ConfigParser()
-    path = './config'
+    path = './config.temp'
     config.read_file(open(path, 'r', encoding='utf-8'))
     config['var']['eth-interface'] = get_eth_interface()
     config['var']['wlan-interface'] = get_wlan_interface()
     config['var']['net-interface'] = get_up_interface()
 
-    with open('.config', 'w', encoding='utf-8') as f:
+    with open('config', 'w', encoding='utf-8') as f:
         config.write(f)
