@@ -14,7 +14,7 @@ install:
 
 common: ctags
 
-linux: common polybar rofi
+linux: common polybar rofi mpv
 
 # ctags
 ctags: ctags/.ctags
@@ -43,6 +43,13 @@ rofi: FORCE
 	@DIR_PATH=$(XDG_CONFIG_HOME)/rofi && $(CREATE_DIR)
 	@$(LINK_CONFIG) SRC='rofi/config'
 	@$(LINK_CONFIG) SRC='rofi/theme.rasi'
+
+# mpv
+mpv: FORCE
+	@$(PRE_ECHO)
+	@DIR_PATH=$(XDG_CONFIG_HOME)/mpv && $(CREATE_DIR)
+	@$(LINK_CONFIG) SRC='mpv/mpv.conf'
+	@$(LINK_CONFIG) SRC='mpv/input.conf'
 
 # utils
 link: FORCE
