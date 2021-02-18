@@ -6,7 +6,7 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 common: ctags
 
-linux: common polybar rofi mpv feh
+linux: common polybar rofi mpv feh sxiv
 
 # ctags
 .PHONY: ctags
