@@ -86,6 +86,20 @@ $(XDG_CONFIG_HOME)/feh/keys: | $(XDG_CONFIG_HOME)/feh
 $(XDG_CONFIG_HOME)/feh:
 	@$(CREATE_TARGET_DIR)
 
+# sxiv
+.PHONY: sxiv
+sxiv: /usr/local/bin/sxiv
+
+/usr/local/bin/sxiv: | sxiv-code
+	cd sxiv-code && make && sudo make install
+
+sxiv-code:
+	git clone https://github.com/deresmos/sxiv sxiv-code
+
+clean:
+	sudo rm /usr/local/bin/sxiv
+	rm -rf sxiv-code
+
 # utils
 link: FORCE
 	@[ -z $(SRC) ] || (SRC_PATH=$(CURDIR)/$(SRC) && \
@@ -97,4 +111,4 @@ link-config: FORCE
 	make -s link SRC=$(SRC) DEST=$(XDG_CONFIG_HOME)/$(SRC)
 
 FORCE:
-.PHONY: FORCE
+.PHONY: FORCE clean
