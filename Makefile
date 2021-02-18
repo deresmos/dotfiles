@@ -1,55 +1,80 @@
-PRE_ECHO = echo '==> $@'
 MAKE = make -s
 LINK_CMD = $(MAKE) link SRC=$<
 LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
-
-FORCE:
-.PHONY: FORCE ctags
-
-install:
-	@echo '----- START: Create all symbolic link -----'
-	@$(MAKE) common
-	@echo '-----  END: Created all symbolic link -----'
+CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )")
 
 common: ctags
 
 linux: common polybar rofi mpv
 
 # ctags
-ctags: ctags/.ctags
-	@$(PRE_ECHO)
-	@$(LINK_CMD) DEST='$(HOME)/.ctags'
-	@DIR_PATH=$(HOME)/.ctags.d && $(CREATE_DIR)
-	@$(LINK_CMD) DEST='$(HOME)/.ctags.d/conf.ctags'
+.PHONY: ctags
+ctags: $(HOME)/.ctags $(HOME)/.ctags.d/conf.ctags
+
+$(HOME)/.ctags:
+	@$(LINK_CMD) SRC='ctags/.ctags' DEST='$(HOME)/.ctags'
+
+$(HOME)/.ctags.d/conf.ctags: | $(HOME)/.ctags.d
+	@$(LINK_CMD) SRC='ctags/.ctags' DEST='$(HOME)/.ctags.d/conf.ctags'
+
+$(HOME)/.ctags.d:
+	@$(CREATE_TARGET_DIR)
 
 # polybar
-polybar: polybar/pulseaudio-rofi.sh FORCE
-	@$(PRE_ECHO)
-	@$(LINK_CONFIG) SRC='polybar/uvcvideo.sh'
-	@DIR_PATH=$(XDG_CONFIG_HOME)/polybar && $(CREATE_DIR)
-	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
-	cd polybar && python make-polybar-config.py
-	@$(LINK_CONFIG) SRC='polybar/config'
+.PHONY: polybar
+polybar: /usr/local/bin/polybar-run $(XDG_CONFIG_HOME)/polybar/config polybar/config
+polybar: /usr/local/bin/pulseaudio-rofi $(XDG_CONFIG_HOME)/polybar/uvcvideo.sh
+
+polybar/config:
 
 polybar/pulseaudio-rofi.sh:
 	curl -L https://github.com/deresmos/polybar-scripts/raw/master/polybar-scripts/pulseaudio-rofi/pulseaudio-rofi.sh -o polybar/pulseaudio-rofi.sh \
 		&& chmod a+x polybar/pulseaudio-rofi.sh
+
+/usr/local/bin/pulseaudio-rofi: polybar/pulseaudio-rofi.sh
 	sudo ln -sf $(CURDIR)/polybar/pulseaudio-rofi.sh /usr/local/bin/pulseaudio-rofi
 
+/usr/local/bin/polybar-run:
+	sudo ln -sf $(CURDIR)/polybar/polybar-run.sh /usr/local/bin/polybar-run
+
+$(XDG_CONFIG_HOME)/polybar/uvcvideo.sh: | $(XDG_CONFIG_HOME)/polybar
+	@$(LINK_CONFIG) SRC='polybar/uvcvideo.sh'
+
+$(XDG_CONFIG_HOME)/polybar/config: polybar/config | $(XDG_CONFIG_HOME)/polybar
+	@$(LINK_CONFIG) SRC='polybar/config'
+
+polybar/config: polybar/make-polybar-config.py
+	cd polybar && python make-polybar-config.py
+
+$(XDG_CONFIG_HOME)/polybar:
+	@$(CREATE_TARGET_DIR)
+
 # rofi
-rofi: FORCE
-	@$(PRE_ECHO)
-	@DIR_PATH=$(XDG_CONFIG_HOME)/rofi && $(CREATE_DIR)
+.PHONY: rofi
+rofi: $(XDG_CONFIG_HOME)/rofi/config $(XDG_CONFIG_HOME)/rofi/theme.rasi
+
+$(XDG_CONFIG_HOME)/rofi/config: | $(XDG_CONFIG_HOME)/rofi
 	@$(LINK_CONFIG) SRC='rofi/config'
+
+$(XDG_CONFIG_HOME)/rofi/theme.rasi: | $(XDG_CONFIG_HOME)/rofi
 	@$(LINK_CONFIG) SRC='rofi/theme.rasi'
 
+$(XDG_CONFIG_HOME)/rofi:
+	@$(CREATE_TARGET_DIR)
+
 # mpv
-mpv: FORCE
-	@$(PRE_ECHO)
-	@DIR_PATH=$(XDG_CONFIG_HOME)/mpv && $(CREATE_DIR)
+.PHONY: mpv
+mpv: $(XDG_CONFIG_HOME)/mpv/mpv.conf $(XDG_CONFIG_HOME)/mpv/input.conf
+
+$(XDG_CONFIG_HOME)/mpv/mpv.conf: | $(XDG_CONFIG_HOME)/mpv
 	@$(LINK_CONFIG) SRC='mpv/mpv.conf'
+
+$(XDG_CONFIG_HOME)/mpv/input.conf: | $(XDG_CONFIG_HOME)/mpv
 	@$(LINK_CONFIG) SRC='mpv/input.conf'
+
+$(XDG_CONFIG_HOME)/mpv:
+	@$(CREATE_TARGET_DIR)
 
 # utils
 link: FORCE
@@ -60,3 +85,6 @@ link: FORCE
 
 link-config: FORCE
 	make -s link SRC=$(SRC) DEST=$(XDG_CONFIG_HOME)/$(SRC)
+
+FORCE:
+.PHONY: FORCE
