@@ -6,7 +6,7 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 common: ctags
 
-linux: common polybar rofi mpv
+linux: common polybar rofi mpv feh
 
 # ctags
 .PHONY: ctags
@@ -74,6 +74,16 @@ $(XDG_CONFIG_HOME)/mpv/input.conf: | $(XDG_CONFIG_HOME)/mpv
 	@$(LINK_CONFIG) SRC='mpv/input.conf'
 
 $(XDG_CONFIG_HOME)/mpv:
+	@$(CREATE_TARGET_DIR)
+
+# feh
+.PHONY: feh
+feh: $(XDG_CONFIG_HOME)/feh/keys
+
+$(XDG_CONFIG_HOME)/feh/keys: | $(XDG_CONFIG_HOME)/feh
+	@$(LINK_CONFIG) SRC='feh/keys'
+
+$(XDG_CONFIG_HOME)/feh:
 	@$(CREATE_TARGET_DIR)
 
 # utils
