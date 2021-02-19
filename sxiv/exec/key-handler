@@ -1,0 +1,13 @@
+#! /bin/bash
+
+while read file
+do
+  case "$1" in
+    "C-o")
+      sxiv-target "$file" &;;
+    # "C-c")
+    #   xclip -selection clipboard -target image/png "$file";;
+    "C-g")
+      gimp "$file" &;;
+  esac
+done

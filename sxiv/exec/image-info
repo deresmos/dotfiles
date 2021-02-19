@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# Arguments:
+#   $1: path to image file
+#   $2: image width
+#   $3: image height
+
+s="  " # field separator
+
+exec 2>/dev/null
+
+filename=$(basename -- "$1")
+filesize=$(du -Hh -- "$1" | cut -f 1)
+geometry="${2}x${3}"
+mime_type=$(file -b --mime-type "$1")
+
+
+echo "${filename}${s}${geometry}${s}${filesize}${s}${mime_type}"

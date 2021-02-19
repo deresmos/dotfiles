@@ -88,7 +88,20 @@ $(XDG_CONFIG_HOME)/feh:
 
 # sxiv
 .PHONY: sxiv
-sxiv: /usr/local/bin/sxiv
+sxiv: $(XDG_CONFIG_HOME)/sxiv/exec/key-handler $(XDG_CONFIG_HOME)/sxiv/exec/image-info
+sxiv: /usr/local/bin/sxiv-target
+
+$(XDG_CONFIG_HOME)/sxiv/exec/key-handler: sxiv/exec/key-handler | $(XDG_CONFIG_HOME)/sxiv/exec
+	@$(LINK_CONFIG)
+
+$(XDG_CONFIG_HOME)/sxiv/exec/image-info: sxiv/exec/image-info | $(XDG_CONFIG_HOME)/sxiv/exec
+	@$(LINK_CONFIG)
+
+/usr/local/bin/sxiv-target: sxiv/sxiv-target.sh
+	sudo ln -sf $(CURDIR)/sxiv/sxiv-target.sh $@
+
+$(XDG_CONFIG_HOME)/sxiv/exec:
+	@$(CREATE_TARGET_DIR)
 
 /usr/local/bin/sxiv: | sxiv-code
 	cd sxiv-code && make && sudo make install
