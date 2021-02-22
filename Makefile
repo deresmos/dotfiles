@@ -4,7 +4,7 @@ LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )")
 
-common: ctags
+common: ctags ranger
 
 linux: common polybar rofi mpv feh sxiv
 
@@ -112,6 +112,25 @@ sxiv-code:
 clean:
 	sudo rm /usr/local/bin/sxiv
 	rm -rf sxiv-code
+
+# ranger
+.PHONY: ranger
+ranger: $(XDG_CONFIG_HOME)/ranger/commands.py $(XDG_CONFIG_HOME)/ranger/rc.conf $(XDG_CONFIG_HOME)/ranger/scope.sh $(XDG_CONFIG_HOME)/ranger/rifle.conf
+
+$(XDG_CONFIG_HOME)/ranger/commands.py: ranger/commands.py | $(XDG_CONFIG_HOME)/ranger
+	@$(LINK_CONFIG)
+
+$(XDG_CONFIG_HOME)/ranger/rc.conf: ranger/rc.conf | $(XDG_CONFIG_HOME)/ranger
+	@$(LINK_CONFIG)
+
+$(XDG_CONFIG_HOME)/ranger/scope.sh: ranger/scope.sh | $(XDG_CONFIG_HOME)/ranger
+	@$(LINK_CONFIG)
+
+$(XDG_CONFIG_HOME)/ranger/rifle.conf: ranger/rifle.conf | $(XDG_CONFIG_HOME)/ranger
+	@$(LINK_CONFIG)
+
+$(XDG_CONFIG_HOME)/ranger:
+	@$(CREATE_TARGET_DIR)
 
 # utils
 link: FORCE
