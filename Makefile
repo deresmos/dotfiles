@@ -4,7 +4,7 @@ LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )")
 
-common: ctags ranger
+common: ctags ranger zsh
 
 linux: common polybar rofi mpv feh sxiv
 
@@ -131,6 +131,13 @@ $(XDG_CONFIG_HOME)/ranger/rifle.conf: ranger/rifle.conf | $(XDG_CONFIG_HOME)/ran
 
 $(XDG_CONFIG_HOME)/ranger:
 	@$(CREATE_TARGET_DIR)
+
+# zsh
+.PHONY: zsh
+zsh: $(HOME)/.zshrc
+
+$(HOME)/.zshrc:
+	@$(LINK_CMD) SRC='zsh/.zshrc' DEST='$(HOME)/.zshrc'
 
 # utils
 link: FORCE
