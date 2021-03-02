@@ -6,7 +6,7 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 common: ctags ranger zsh
 
-linux: common polybar rofi mpv feh sxiv i3
+linux: common polybar rofi mpv feh sxiv i3 urxvt
 
 # ctags
 .PHONY: ctags
@@ -148,6 +148,13 @@ $(HOME)/.i3/config: i3/config | $(HOME)/.i3
 
 $(HOME)/.i3:
 	@$(CREATE_TARGET_DIR)
+
+# urxvt
+.PHONY: urxvt
+urxvt: $(HOME)/.Xresources
+
+$(HOME)/.Xresources: urxvt/.Xresources
+	@$(LINK_CMD) SRC='urxvt/.Xresources' DEST='$(HOME)/.Xresources'
 
 # utils
 link: FORCE
