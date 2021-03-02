@@ -6,7 +6,7 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 common: ctags ranger zsh
 
-linux: common polybar rofi mpv feh sxiv
+linux: common polybar rofi mpv feh sxiv i3
 
 # ctags
 .PHONY: ctags
@@ -138,6 +138,16 @@ zsh: $(HOME)/.zshrc
 
 $(HOME)/.zshrc:
 	@$(LINK_CMD) SRC='zsh/.zshrc' DEST='$(HOME)/.zshrc'
+
+# i3
+.PHONY: i3
+i3: $(HOME)/.i3/config
+
+$(HOME)/.i3/config: i3/config | $(HOME)/.i3
+	@$(LINK_CMD) SRC='i3/config' DEST='$(HOME)/.i3/config'
+
+$(HOME)/.i3:
+	@$(CREATE_TARGET_DIR)
 
 # utils
 link: FORCE
