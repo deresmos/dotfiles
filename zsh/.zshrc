@@ -8,7 +8,7 @@ fi
 # Zinit {{{1
 export ZINIT_HOME=$HOME/.zinit
 ## Install zinit
-[ -d $ZINIT_HOME ] || git clone https://github.com/zdharma/zinit.git $ZINIT_HOME/bin
+[ -d $ZINIT_HOME ] || git clone https://github.com/zdharma-continuum/zinit $ZINIT_HOME/bin
 source $ZINIT_HOME/bin/zinit.zsh
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
@@ -365,3 +365,5 @@ if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/
 
 # The next line enables shell command completion for gcloud.
 if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
+
+[ -f ~/.cargo/env ] && source ~/.cargo/env
