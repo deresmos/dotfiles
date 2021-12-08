@@ -18,7 +18,8 @@ zinit ice lucid wait'0';zinit light "mollifier/cd-gitroot"
 zinit ice lucid wait'0';zinit light "zsh-users/zsh-completions"
 # zinit ice lucid wait'0';zinit light "Aloxaf/fzf-tab"
 # zstyle ':fzf-tab:*' no-group-color $'\033[1;37m'
-# zinit light "zsh-users/zsh-autosuggestions"
+zinit light "zsh-users/zsh-autosuggestions"
+unset ZSH_AUTOSUGGEST_USE_ASYNC
 zinit ice lucid wait'0';zinit light "soimort/translate-shell"
 zinit ice as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"; zinit light sharkdp/fd
 zinit ice as"command" from"gh-r" mv"bat* -> bat" pick"bat/bat"; zinit light sharkdp/bat
