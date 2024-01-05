@@ -76,6 +76,7 @@ zstyle ':zle:*' word-style unspecified
 # exports {{{1
 export EDITOR=nvim
 export PATH=$HOME/usr/local/bin:$PATH
+export PATH="$HOME/.cargo/bin:$PATH"
 
 if [ $IS_LINUX ]; then
 	export TERM=xterm-256color
@@ -100,6 +101,10 @@ export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 # ETC
 export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH:
 export CUDA_HOME=/opt/cuda
+
+# Deno
+export DENO_INSTALL=$HOME/.deno
+export PATH=$DENO_INSTALL/bin:$PATH
 
 # Prompt {{{1
 autoload -Uz vcs_info
@@ -360,6 +365,8 @@ function rename2serialN() {
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 if [ -f "$HOME/.zshrc_custom" ]; then source "$HOME/.zshrc_custom"; fi
+
+[ -f ~/.cargo/env ] && source ~/.cargo/env
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
