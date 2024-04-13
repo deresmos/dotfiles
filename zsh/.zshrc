@@ -26,7 +26,7 @@ zinit ice as"command" from"gh-r" mv"bat* -> bat" pick"bat/bat"; zinit light shar
 zinit ice as"command" from"gh-r" mv"ripgrep*/rg -> rg" pick"ripgrep/ripgrep"; zinit light BurntSushi/ripgrep
 zinit ice as"command" from"gh-r" mv"gh*/bin/gh -> gh" pick"gh/gh"; zinit light cli/cli
 zinit ice as"command" from"gh-r" mv"terraform-lsp* -> terraform-lsp" pick"terraform-lsp/terraform-lsp"; zinit light juliosueiras/terraform-lsp
-zinit ice as"command" from"gh-r" mv"jq* -> jq" pick"stedolan/jq"; zinit light stedolan/jq
+zinit ice as"command" from"gh-r" mv"jq* -> jq" pick"jqlang/jq"; zinit light jqlang/jq
 zinit ice from"gh-r" as"program";zinit light junegunn/fzf-bin
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
