@@ -270,6 +270,18 @@ if type pyenv > /dev/null; then
     }
 fi
 
+# rbenv {{{1
+export RBENV_ROOT="${HOME}/.rbenv"
+export PATH="${RBENV_ROOT}/bin:${RBENV_ROOT}/shims:${PATH}"
+# Lazy load
+if type rbenv > /dev/null; then
+    function rbenv() {
+        unset -f rbenv
+        eval "$(~/.rbenv/bin/rbenv init - zsh)"
+        rbenv $@
+    }
+fi
+
 # nodenv {{{1
 export NODENV_ROOT="${HOME}/.nodenv"
 export PATH="${NODENV_ROOT}/bin:${NODENV_ROOT}/shims:${PATH}"

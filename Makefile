@@ -166,5 +166,12 @@ link: FORCE
 link-config: FORCE
 	make -s link SRC=$(SRC) DEST=$(XDG_CONFIG_HOME)/$(SRC)
 
+# wezterm
+.PHONY: wezterm
+wezterm: $(HOME)/.wezterm.lua
+
+$(HOME)/.wezterm.lua:
+	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
+
 FORCE:
 .PHONY: FORCE clean
