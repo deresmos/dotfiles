@@ -75,7 +75,7 @@ zstyle ':zle:*' word-style unspecified
 
 # exports {{{1
 export EDITOR=nvim
-export PATH=$HOME/usr/local/bin:$PATH
+export PATH=$HOME/.local/bin:$HOME/usr/local/bin:$PATH
 export PATH="$HOME/.cargo/bin:$PATH"
 
 if [ $IS_LINUX ]; then
@@ -293,6 +293,9 @@ if type nodenv > /dev/null; then
         nodenv $@
     }
 fi
+
+# mise {{{1
+eval "$(~/.local/bin/mise activate zsh)"
 
 # go environment {{{1
 [ -f $HOME/.gvm/scripts/gvm ] && source "$HOME/.gvm/scripts/gvm"

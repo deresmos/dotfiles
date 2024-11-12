@@ -4,9 +4,11 @@ LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )")
 
-common: ctags ranger zsh
+common: ctags ranger zsh mise
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
+
+mac: common yabai skhd
 
 # ctags
 .PHONY: ctags
@@ -172,6 +174,30 @@ wezterm: $(HOME)/.wezterm.lua
 
 $(HOME)/.wezterm.lua:
 	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
+
+# mise
+.PHONY: mise
+mise: $(XDG_CONFIG_HOME)/mise
+	@$(LINK_CONFIG) SRC='mise/config.toml'
+
+$(XDG_CONFIG_HOME)/mise:
+	@$(CREATE_TARGET_DIR)
+
+# yabai
+.PHONY: yabai
+yabai: $(XDG_CONFIG_HOME)/yabai
+	@$(LINK_CONFIG) SRC='yabai/yabairc'
+
+$(XDG_CONFIG_HOME)/yabai:
+	@$(CREATE_TARGET_DIR)
+
+# skhd
+.PHONY: skhd
+skhd: $(XDG_CONFIG_HOME)/skhd
+	@$(LINK_CONFIG) SRC='skhd/skhdrc'
+
+$(XDG_CONFIG_HOME)/skhd:
+	@$(CREATE_TARGET_DIR)
 
 FORCE:
 .PHONY: FORCE clean
