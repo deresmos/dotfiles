@@ -1,0 +1,18 @@
+ctrl + cmd - h : yabai -m window --focus west
+ctrl + cmd - l : yabai -m window --focus east
+ctrl + cmd - k : yabai -m window --focus north
+ctrl + cmd - j : yabai -m window --focus south
+ctrl + shift + cmd - h : yabai -m window --swap west
+ctrl + shift + cmd - l : yabai -m window --swap east
+ctrl + shift + cmd - h : yabai -m window --swap north
+ctrl + shift + cmd - l : yabai -m window --swap south
+
+ctrl + cmd - t : yabai -m window --toggle float;
+
+# alt - 1 : yabai -m window --focus 1
+# alt - 2 : yabai -m window --focus 2
+
+shift + cmd - 0 : yabai -m space --balance
+
+alt - z  : yabai -m display --focus next
+shift + alt - z  : yabai -m display --swap next

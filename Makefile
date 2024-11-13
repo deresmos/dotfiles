@@ -4,6 +4,8 @@ LINK_CONFIG = $(MAKE) link-config SRC=$<
 CREATE_DIR = [ -d $$DIR_PATH ] || (mkdir -p $$DIR_PATH && echo "Created directory. ( $$DIR_PATH )")
 CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )")
 
+include ./xdg_config.mk
+
 common: ctags ranger zsh mise
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
@@ -52,32 +54,6 @@ polybar/config: polybar/make-polybar-config.py
 $(XDG_CONFIG_HOME)/polybar:
 	@$(CREATE_TARGET_DIR)
 
-# rofi
-.PHONY: rofi
-rofi: $(XDG_CONFIG_HOME)/rofi/config $(XDG_CONFIG_HOME)/rofi/theme.rasi
-
-$(XDG_CONFIG_HOME)/rofi/config: | $(XDG_CONFIG_HOME)/rofi
-	@$(LINK_CONFIG) SRC='rofi/config'
-
-$(XDG_CONFIG_HOME)/rofi/theme.rasi: | $(XDG_CONFIG_HOME)/rofi
-	@$(LINK_CONFIG) SRC='rofi/theme.rasi'
-
-$(XDG_CONFIG_HOME)/rofi:
-	@$(CREATE_TARGET_DIR)
-
-# mpv
-.PHONY: mpv
-mpv: $(XDG_CONFIG_HOME)/mpv/mpv.conf $(XDG_CONFIG_HOME)/mpv/input.conf
-
-$(XDG_CONFIG_HOME)/mpv/mpv.conf: | $(XDG_CONFIG_HOME)/mpv
-	@$(LINK_CONFIG) SRC='mpv/mpv.conf'
-
-$(XDG_CONFIG_HOME)/mpv/input.conf: | $(XDG_CONFIG_HOME)/mpv
-	@$(LINK_CONFIG) SRC='mpv/input.conf'
-
-$(XDG_CONFIG_HOME)/mpv:
-	@$(CREATE_TARGET_DIR)
-
 # feh
 .PHONY: feh
 feh: $(XDG_CONFIG_HOME)/feh/keys
@@ -114,25 +90,6 @@ sxiv-code:
 clean:
 	sudo rm /usr/local/bin/sxiv
 	rm -rf sxiv-code
-
-# ranger
-.PHONY: ranger
-ranger: $(XDG_CONFIG_HOME)/ranger/commands.py $(XDG_CONFIG_HOME)/ranger/rc.conf $(XDG_CONFIG_HOME)/ranger/scope.sh $(XDG_CONFIG_HOME)/ranger/rifle.conf
-
-$(XDG_CONFIG_HOME)/ranger/commands.py: ranger/commands.py | $(XDG_CONFIG_HOME)/ranger
-	@$(LINK_CONFIG)
-
-$(XDG_CONFIG_HOME)/ranger/rc.conf: ranger/rc.conf | $(XDG_CONFIG_HOME)/ranger
-	@$(LINK_CONFIG)
-
-$(XDG_CONFIG_HOME)/ranger/scope.sh: ranger/scope.sh | $(XDG_CONFIG_HOME)/ranger
-	@$(LINK_CONFIG)
-
-$(XDG_CONFIG_HOME)/ranger/rifle.conf: ranger/rifle.conf | $(XDG_CONFIG_HOME)/ranger
-	@$(LINK_CONFIG)
-
-$(XDG_CONFIG_HOME)/ranger:
-	@$(CREATE_TARGET_DIR)
 
 # zsh
 .PHONY: zsh
@@ -174,30 +131,6 @@ wezterm: $(HOME)/.wezterm.lua
 
 $(HOME)/.wezterm.lua:
 	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
-
-# mise
-.PHONY: mise
-mise: $(XDG_CONFIG_HOME)/mise
-	@$(LINK_CONFIG) SRC='mise/config.toml'
-
-$(XDG_CONFIG_HOME)/mise:
-	@$(CREATE_TARGET_DIR)
-
-# yabai
-.PHONY: yabai
-yabai: $(XDG_CONFIG_HOME)/yabai
-	@$(LINK_CONFIG) SRC='yabai/yabairc'
-
-$(XDG_CONFIG_HOME)/yabai:
-	@$(CREATE_TARGET_DIR)
-
-# skhd
-.PHONY: skhd
-skhd: $(XDG_CONFIG_HOME)/skhd
-	@$(LINK_CONFIG) SRC='skhd/skhdrc'
-
-$(XDG_CONFIG_HOME)/skhd:
-	@$(CREATE_TARGET_DIR)
 
 FORCE:
 .PHONY: FORCE clean
