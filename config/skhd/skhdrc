@@ -8,6 +8,7 @@ ctrl + shift + cmd - h : yabai -m window --swap north
 ctrl + shift + cmd - l : yabai -m window --swap south
 
 ctrl + cmd - t : yabai -m window --toggle float;
+ctrl + cmd - f : yabai -m window --toggle zoom-fullscreen;
 
 # alt - 1 : yabai -m window --focus 1
 # alt - 2 : yabai -m window --focus 2
