@@ -1,14 +1,17 @@
-ctrl + cmd - h : yabai -m window --focus west
-ctrl + cmd - l : yabai -m window --focus east
-ctrl + cmd - k : yabai -m window --focus north
-ctrl + cmd - j : yabai -m window --focus south
-ctrl + shift + cmd - h : yabai -m window --swap west
-ctrl + shift + cmd - l : yabai -m window --swap east
-ctrl + shift + cmd - h : yabai -m window --swap north
-ctrl + shift + cmd - l : yabai -m window --swap south
+ctrl + cmd - h : yabai -m window --focus west || yabai -m window --focus stack.prev
+ctrl + cmd - l : yabai -m window --focus east || yabai -m window --focus stack.next
+ctrl + cmd - k : yabai -m window --focus north || yabai -m window --focus stack.prev
+ctrl + cmd - j : yabai -m window --focus south || yabai -m window --focus stack.next
+ctrl + shift + cmd - h : yabai -m window --swap west || yabai -m window --swap stack.prev
+ctrl + shift + cmd - l : yabai -m window --swap east || yabai -m window --swap stack.next
+ctrl + shift + cmd - k : yabai -m window --swap north || yabai -m window --swap stack.prev
+ctrl + shift + cmd - j : yabai -m window --swap south || yabai -m window --swap stack.next
 
 ctrl + cmd - t : yabai -m window --toggle float;
 ctrl + cmd - f : yabai -m window --toggle zoom-fullscreen;
+ctrl + shift + cmd - s : yabai -m config layout stack
+ctrl + shift + cmd - c : yabai -m config layout bsp
+ctrl + shift + cmd - f : yabai -m config layout float
 
 # alt - 1 : yabai -m window --focus 1
 # alt - 2 : yabai -m window --focus 2

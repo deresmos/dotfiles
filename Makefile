@@ -6,11 +6,11 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 include ./xdg_config.mk
 
-common: ctags ranger zsh mise
+common: ctags ranger zsh mise wezterm
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
 
-mac: common yabai skhd
+mac: common yabai skhd sketchybar
 
 # ctags
 .PHONY: ctags
@@ -127,9 +127,7 @@ link-config: FORCE
 
 # wezterm
 .PHONY: wezterm
-wezterm: $(HOME)/.wezterm.lua
-
-$(HOME)/.wezterm.lua:
+wezterm:
 	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
 
 FORCE:

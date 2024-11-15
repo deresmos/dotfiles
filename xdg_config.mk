@@ -35,6 +35,33 @@ rofi: | $(XDG_CONFIG_HOME)/rofi
 $(XDG_CONFIG_HOME)/rofi:
 	@$(CREATE_TARGET_DIR)
 
+# sketchybar
+.PHONY: sketchybar
+sketchybar: | $(XDG_CONFIG_HOME)/sketchybar
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/space_windows.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/space_windows.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/volume.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/volume.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/space.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/space.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/front_app.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/front_app.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/clock.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/clock.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/battery.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/battery.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/sketchybarrc' DEST='$(XDG_CONFIG_HOME)/sketchybar/sketchybarrc'
+
+$(XDG_CONFIG_HOME)/sketchybar:
+	@$(CREATE_TARGET_DIR)
+
+# sketchybar/plugins
+.PHONY: sketchybar/plugins
+sketchybar/plugins: | $(XDG_CONFIG_HOME)/sketchybar/plugins
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/space_windows.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/space_windows.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/volume.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/volume.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/space.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/space.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/front_app.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/front_app.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/clock.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/clock.sh'
+	@$(LINK_CMD) SRC='config/sketchybar/plugins/battery.sh' DEST='$(XDG_CONFIG_HOME)/sketchybar/plugins/battery.sh'
+
+$(XDG_CONFIG_HOME)/sketchybar/plugins:
+	@$(CREATE_TARGET_DIR)
+
 # skhd
 .PHONY: skhd
 skhd: | $(XDG_CONFIG_HOME)/skhd

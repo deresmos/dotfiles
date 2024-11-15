@@ -5,7 +5,7 @@ return {
     'Fira Code',
     'Teminess Nerd Font',
   },
-  font_size = 12,
+  font_size = 14,
   automatically_reload_config = true,
   warn_about_missing_glyphs = false,
 }
