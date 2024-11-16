@@ -2,3 +2,7 @@
 go = "1.23.2"
 python = "3.13.0"
 node = "22"
+terraform = "latest"
+
+[settings]
+legacy_version_file_disable_tools = ["terraform", "packer"]
