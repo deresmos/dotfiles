@@ -25,7 +25,7 @@ yabai -m config \
     mouse_drop_action swap \
     top_padding 0 \
     bottom_padding 0 \
-    external_bar all:0:22 \
+    external_bar all:22:0 \
     left_padding 0 \
     right_padding 0 \
     window_gap 06 \
