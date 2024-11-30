@@ -50,10 +50,10 @@ sketchybar --add item space_separator center \
            script="$PLUGIN_DIR/space_windows.sh" \
            --subscribe space_separator space_windows_change yabai_window_moved yabai_window_focused
 
-sketchybar --add item clock right \
-           --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh" \
-           --add item volume right \
-           --set volume script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change
+#sketchybar --add item clock right \
+#           --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh" \
+#           --add item volume right \
+#           --set volume script="$PLUGIN_DIR/volume.sh" \
+#           --subscribe volume volume_change
 
 sketchybar --update
