@@ -130,5 +130,11 @@ link-config: FORCE
 wezterm:
 	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
 
+# claude
+.PHONY: claude
+claude:
+	@$(LINK_CMD) SRC='claude/settings.json' DEST='$(HOME)/.claude/settings.json'
+	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
+
 FORCE:
 .PHONY: FORCE clean
