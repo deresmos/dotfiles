@@ -110,4 +110,4 @@ DIR=$(get_current_dir)
 GIT_BRANCH=$(get_git_branch)
 
 # 最終的なステータス行を構築して出力
-echo -e "[~${DIR#$HOME}] [${GIT_BRANCH}] | ${TOKEN_DISPLAY} (${PERCENTAGE_COLOR}${PERCENTAGE}%${NC})"
+echo -e "${GREEN}[~${DIR#$HOME}]${NC} ${RED}[${GIT_BRANCH}]${NC} | ${TOKEN_DISPLAY} (${PERCENTAGE_COLOR}${PERCENTAGE}%${NC})"
