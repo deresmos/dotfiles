@@ -77,7 +77,7 @@ else
 fi
 
 # パーセンテージを計算
-PERCENTAGE=$(echo "scale=1; ($TOTAL_TOKENS / $COMPACTION_THRESHOLD) * 100 / 1" | bc)
+PERCENTAGE=$(echo "scale=0; (($TOTAL_TOKENS * 100) / $COMPACTION_THRESHOLD) / 1" | bc)
 # パーセンテージが100%を超える場合は100に丸める
 if (( $(echo "$PERCENTAGE > 100" | bc -l) )); then
   PERCENTAGE=100
