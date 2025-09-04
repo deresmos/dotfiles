@@ -135,6 +135,7 @@ wezterm:
 claude:
 	@$(LINK_CMD) SRC='claude/settings.json' DEST='$(HOME)/.claude/settings.json'
 	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
+	@$(LINK_CMD) SRC='claude/hooks.sh' DEST='$(HOME)/.claude/hooks.sh'
 
 FORCE:
 .PHONY: FORCE clean
