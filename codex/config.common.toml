@@ -1,0 +1,15 @@
+model = "gpt-5.4"
+personality = "pragmatic"
+notify = ["bash", "-lc", "~/.codex/notify.sh \"$1\"", "--"]
+
+[tui]
+notifications = true
+notification_method = "auto"
+
+[profiles.full_auto]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.ro]
+approval_policy = "never"
+sandbox_mode = "read-only"

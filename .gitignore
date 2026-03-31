@@ -6,3 +6,5 @@ polybar/popup-calendar.sh
 polybar/pulseaudio-rofi.sh
 
 sxiv-code
+claude/settings.local.json
+codex/config.local.toml

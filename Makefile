@@ -10,7 +10,7 @@ common: ctags ranger zsh mise wezterm
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
 
-mac: common yabai skhd sketchybar
+mac: common yabai skhd sketchybar claude codex
 
 # ctags
 .PHONY: ctags
@@ -133,9 +133,31 @@ wezterm:
 # claude
 .PHONY: claude
 claude:
-	@$(LINK_CMD) SRC='claude/settings.json' DEST='$(HOME)/.claude/settings.json'
 	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
 	@$(LINK_CMD) SRC='claude/hooks.sh' DEST='$(HOME)/.claude/hooks.sh'
+	@chmod a+x $(CURDIR)/claude/build-settings.sh
+	@$(CURDIR)/claude/build-settings.sh
+
+# codex
+.PHONY: codex
+codex: | $(HOME)/.codex
+	@chmod a+x $(CURDIR)/codex/notify.sh
+	@$(LINK_CMD) SRC='codex/notify.sh' DEST='$(HOME)/.codex/notify.sh'
+	@chmod a+x $(CURDIR)/codex/build-config.sh
+	@$(CURDIR)/codex/build-config.sh
+
+$(HOME)/.codex:
+	@$(CREATE_TARGET_DIR)
+
+.PHONY: codex-diff
+codex-diff:
+	@chmod a+x $(CURDIR)/codex/diff-config.sh
+	@$(CURDIR)/codex/diff-config.sh
+
+.PHONY: claude-diff
+claude-diff:
+	@chmod a+x $(CURDIR)/claude/diff-settings.sh
+	@$(CURDIR)/claude/diff-settings.sh
 
 FORCE:
 .PHONY: FORCE clean
