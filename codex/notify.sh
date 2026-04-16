@@ -58,7 +58,9 @@ escaped_message=${escaped_message//\"/\\\"}
 escaped_title=${title//\\/\\\\}
 escaped_title=${escaped_title//\"/\\\"}
 
-osascript -e "display notification \"$escaped_message\" with title \"$escaped_title\" sound name \"$sound\"" || true
+if [ -z "${CMUX_SURFACE_ID:-}" ]; then
+  osascript -e "display notification \"$escaped_message\" with title \"$escaped_title\" sound name \"$sound\"" || true
+fi
 
 if [ -n "${DISCORD_WEBHOOK_URL_FOR_CC:-}" ]; then
   discord_message=$(printf '%s' "$payload" | jq -r '

@@ -3,6 +3,26 @@
     "CLAUDE_CODE_NO_FLICKER": "1"
   },
   "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/create-worktree.sh"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/remove-worktree.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [

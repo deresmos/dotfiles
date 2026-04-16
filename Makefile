@@ -10,7 +10,7 @@ common: ctags ranger zsh mise wezterm
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
 
-mac: common yabai skhd sketchybar claude codex
+mac: common cmux ghostty yabai skhd sketchybar claude codex
 
 # ctags
 .PHONY: ctags
@@ -132,21 +132,40 @@ wezterm:
 
 # claude
 .PHONY: claude
-claude:
+claude: | $(HOME)/.claude $(HOME)/.claude/hooks
 	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
 	@$(LINK_CMD) SRC='claude/hooks.sh' DEST='$(HOME)/.claude/hooks.sh'
+	@chmod a+x $(CURDIR)/claude/hooks/create-worktree.sh
+	@chmod a+x $(CURDIR)/claude/hooks/remove-worktree.sh
+	@$(LINK_CMD) SRC='claude/hooks/create-worktree.sh' DEST='$(HOME)/.claude/hooks/create-worktree.sh'
+	@$(LINK_CMD) SRC='claude/hooks/remove-worktree.sh' DEST='$(HOME)/.claude/hooks/remove-worktree.sh'
 	@chmod a+x $(CURDIR)/claude/build-settings.sh
 	@$(CURDIR)/claude/build-settings.sh
 
+$(HOME)/.claude:
+	@$(CREATE_TARGET_DIR)
+
+$(HOME)/.claude/hooks:
+	@$(CREATE_TARGET_DIR)
+
 # codex
 .PHONY: codex
-codex: | $(HOME)/.codex
+codex: | $(HOME)/.codex $(HOME)/.local/bin
 	@chmod a+x $(CURDIR)/codex/notify.sh
 	@$(LINK_CMD) SRC='codex/notify.sh' DEST='$(HOME)/.codex/notify.sh'
+	@chmod a+x $(CURDIR)/codex/create-worktree.sh
+	@chmod a+x $(CURDIR)/codex/remove-worktree.sh
+	@chmod a+x $(CURDIR)/codex/codex-worktree.sh
+	@chmod a+x $(CURDIR)/codex/codex-worktree-rm.sh
+	@$(LINK_CMD) SRC='codex/codex-worktree.sh' DEST='$(HOME)/.local/bin/codex-worktree'
+	@$(LINK_CMD) SRC='codex/codex-worktree-rm.sh' DEST='$(HOME)/.local/bin/codex-worktree-rm'
 	@chmod a+x $(CURDIR)/codex/build-config.sh
 	@$(CURDIR)/codex/build-config.sh
 
 $(HOME)/.codex:
+	@$(CREATE_TARGET_DIR)
+
+$(HOME)/.local/bin:
 	@$(CREATE_TARGET_DIR)
 
 .PHONY: codex-diff

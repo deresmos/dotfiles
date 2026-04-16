@@ -18,14 +18,18 @@ fi
 event_name=$(echo "$input" | jq -r '.hook_event_name')
 
 echo $input | jq -c -r '.' >> ~/.claude/log.txt
+
 if [ "$event_name" == "Stop" ]; then
-  osascript -e 'display notification "✅ Task completed" with title "Claude Code" sound name "Glass"'
+  if [ -z "${CMUX_SURFACE_ID:-}" ]; then
+    osascript -e 'display notification "✅ Task completed" with title "Claude Code" sound name "Glass"'
+  fi
   send_discord "✅ タスクが完了しました"
 elif [ "$event_name" == "Notification" ]; then
   message=$(echo "$input" | jq -r '.message')
-  osascript -e "display notification \"⚠️ $message\" with title \"Claude Code\" sound name \"Bottle\""
+  if [ -z "${CMUX_SURFACE_ID:-}" ]; then
+    osascript -e "display notification \"⚠️ $message\" with title \"Claude Code\" sound name \"Bottle\""
+  fi
   send_discord "⚠️ 操作が必要です: $message"
 else
   exit 1
 fi
-

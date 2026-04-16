@@ -1,3 +1,19 @@
+# cmux
+.PHONY: cmux
+cmux: | $(XDG_CONFIG_HOME)/cmux
+	@$(LINK_CMD) SRC='config/cmux/settings.json' DEST='$(XDG_CONFIG_HOME)/cmux/settings.json'
+
+$(XDG_CONFIG_HOME)/cmux:
+	@$(CREATE_TARGET_DIR)
+
+# ghostty
+.PHONY: ghostty
+ghostty: | $(XDG_CONFIG_HOME)/ghostty
+	@$(LINK_CMD) SRC='config/ghostty/config' DEST='$(XDG_CONFIG_HOME)/ghostty/config'
+
+$(XDG_CONFIG_HOME)/ghostty:
+	@$(CREATE_TARGET_DIR)
+
 # mise
 .PHONY: mise
 mise: | $(XDG_CONFIG_HOME)/mise
@@ -77,4 +93,3 @@ yabai: | $(XDG_CONFIG_HOME)/yabai
 
 $(XDG_CONFIG_HOME)/yabai:
 	@$(CREATE_TARGET_DIR)
-
