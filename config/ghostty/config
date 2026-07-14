@@ -1,3 +1,5 @@
 font-family = "Monaspace Argon"
 font-family = "Teminess Nerd Font"
 font-size = 14
+scrollback-limit = 100000000
+macos-option-as-alt = left

@@ -6,7 +6,7 @@ CREATE_TARGET_DIR = [ -d $@ ] || (mkdir -p $@ && echo "Created directory. ( $@ )
 
 include ./xdg_config.mk
 
-common: ctags ranger zsh mise wezterm
+common: ctags ranger zsh mise wezterm scripts
 
 linux: common polybar rofi mpv feh sxiv i3 urxvt
 
@@ -130,6 +130,12 @@ link-config: FORCE
 wezterm:
 	@$(LINK_CMD) SRC='wezterm/.wezterm.lua' DEST='$(HOME)/.wezterm.lua'
 
+# scripts
+.PHONY: scripts
+scripts: | $(HOME)/.local/bin
+	@chmod a+x $(CURDIR)/scripts/agent-with-worktree.sh
+	@$(LINK_CMD) SRC='scripts/agent-with-worktree.sh' DEST='$(HOME)/.local/bin/agent-with-worktree'
+
 # claude
 .PHONY: claude
 claude: | $(HOME)/.claude $(HOME)/.claude/hooks
@@ -153,12 +159,10 @@ $(HOME)/.claude/hooks:
 codex: | $(HOME)/.codex $(HOME)/.local/bin
 	@chmod a+x $(CURDIR)/codex/notify.sh
 	@$(LINK_CMD) SRC='codex/notify.sh' DEST='$(HOME)/.codex/notify.sh'
-	@chmod a+x $(CURDIR)/codex/create-worktree.sh
-	@chmod a+x $(CURDIR)/codex/remove-worktree.sh
-	@chmod a+x $(CURDIR)/codex/codex-worktree.sh
-	@chmod a+x $(CURDIR)/codex/codex-worktree-rm.sh
 	@$(LINK_CMD) SRC='codex/codex-worktree.sh' DEST='$(HOME)/.local/bin/codex-worktree'
 	@$(LINK_CMD) SRC='codex/codex-worktree-rm.sh' DEST='$(HOME)/.local/bin/codex-worktree-rm'
+	@$(LINK_CMD) SRC='codex/hooks.json' DEST='$(HOME)/.codex/hooks.json'
+	@$(LINK_CMD) SRC='codex/cmux-codex-hook.sh' DEST='$(HOME)/.codex/cmux-codex-hook.sh'
 	@chmod a+x $(CURDIR)/codex/build-config.sh
 	@$(CURDIR)/codex/build-config.sh
 

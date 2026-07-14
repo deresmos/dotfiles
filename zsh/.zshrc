@@ -16,6 +16,7 @@ autoload -Uz _zinit
 ## Setting
 zinit ice lucid wait'0';zinit light "mollifier/cd-gitroot"
 zinit ice lucid wait'0';zinit light "zsh-users/zsh-completions"
+zinit ice lucid wait'0';zinit light "superbrothers/zsh-kubectl-prompt"
 # zinit ice lucid wait'0';zinit light "Aloxaf/fzf-tab"
 # zstyle ':fzf-tab:*' no-group-color $'\033[1;37m'
 zinit light "zsh-users/zsh-autosuggestions"
@@ -25,6 +26,7 @@ zinit ice as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"; zinit light sharkdp/
 zinit ice as"command" from"gh-r" mv"bat* -> bat" pick"bat/bat"; zinit light sharkdp/bat
 zinit ice as"command" from"gh-r" mv"ripgrep*/rg -> rg" pick"ripgrep/ripgrep"; zinit light BurntSushi/ripgrep
 zinit ice as"command" from"gh-r" mv"gh*/bin/gh -> gh" pick"gh/gh"; zinit light cli/cli
+zinit ice as"command" from"gh-r" mv"deno* -> deno" pick"deno/deno"; zinit light denoland/deno
 zinit ice as"command" from"gh-r" mv"terraform-lsp* -> terraform-lsp" pick"terraform-lsp/terraform-lsp"; zinit light juliosueiras/terraform-lsp
 zinit ice as"command" from"gh-r" mv"jq* -> jq" pick"jqlang/jq"; zinit light jqlang/jq
 zinit ice from"gh-r" as"program";zinit light junegunn/fzf-bin
@@ -39,6 +41,8 @@ zstyle ':notify:*' command-error-timeout 2
 zstyle ':notify:*' ignore-success-command "nvim"
 zstyle ':notify:*' error-title "_(*/□＼*) (#{time_elapsed} seconds)"
 zstyle ':notify:*' success-title "o(≧▽≦)o (#{time_elapsed} seconds)"
+zinit light reegnz/jq-zsh-plugin
+bindkey "^j" jq-complete
 
 # zsh setting {{{1
 bindkey -e
@@ -74,7 +78,7 @@ zstyle ':zle:*' word-chars " /=;@:,|"
 zstyle ':zle:*' word-style unspecified
 
 # exports {{{1
-export EDITOR=nvim
+export EDITOR=vim
 export PATH=$HOME/.local/bin:$HOME/usr/local/bin:$PATH
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -96,7 +100,7 @@ export PATH=$HOME/.phpenv/bin:$PATH
 export PATH=$HOME/.config/composer/vendor/bin:$PATH
 
 # Neovim
-export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
+#export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 
 # ETC
 export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH:
@@ -130,7 +134,7 @@ if [ ${UID} -eq 0 ]; then
 	local tmp_prompt2="%F{magenta}%_> %f"
 fi
 
-PROMPT=${upper_prompt}"%B"'${vcs_info_msg_0_}'"%b""
+PROMPT=${upper_prompt}"%B"'${vcs_info_msg_0_}'"%b"""' ${ZSH_KUBECTL_CONTEXT}'"
 ${left_prompt}"
 PROMPT2="%B${tmp_prompt2}%b"
 RPROMPT=${rprompt}
@@ -295,10 +299,28 @@ if type nodenv > /dev/null; then
 fi
 
 # mise {{{1
-eval "$(~/.local/bin/mise activate zsh)"
+export MISE_BIN="$HOME/.local/bin/mise"
+export MISE_SHIMS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims"
+[ -d "$MISE_SHIMS_DIR" ] && export PATH="$MISE_SHIMS_DIR:$PATH"
+
+if [ -x "$MISE_BIN" ]; then
+    function __load_mise() {
+        unset -f __load_mise mise
+        eval "$("$MISE_BIN" activate zsh)"
+    }
+
+    function mise() {
+        __load_mise
+        mise "$@"
+    }
+fi
 
 # go environment {{{1
-[ -f $HOME/.gvm/scripts/gvm ] && source "$HOME/.gvm/scripts/gvm"
+[ -f $HOME/.gvm/scripts/gvm ] && function gvm() {
+    unset -f gvm
+    source "$HOME/.gvm/scripts/gvm"
+    gvm "$@"
+}
 
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"
@@ -306,9 +328,9 @@ if type goenv > /dev/null; then
     function goenv() {
         unset -f goenv
         eval "$(goenv init -)"
-				export PATH="$GOROOT/bin:$PATH"
-				export PATH="$PATH:$GOPATH/bin"
-        goenv $@
+        export PATH="$GOROOT/bin:$PATH"
+        export PATH="$PATH:$GOPATH/bin"
+        goenv "$@"
     }
 fi
 
@@ -379,7 +401,7 @@ function rename2serialN() {
 [ -d $HOME/.fzf ] || $(git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf && ~/.fzf/install)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-if [ -f "$HOME/.zshrc_custom" ]; then source "$HOME/.zshrc_custom"; fi
+if [ -f "$HOME/.zshrc_local" ]; then source "$HOME/.zshrc_local"; fi
 
 [ -f ~/.cargo/env ] && source ~/.cargo/env
 
@@ -390,3 +412,9 @@ if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/
 if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.cargo/env ] && source ~/.cargo/env
+
+eval $(/opt/homebrew/bin/brew shellenv)
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)

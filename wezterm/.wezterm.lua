@@ -2,7 +2,7 @@ local wezterm = require 'wezterm'
 
 return {
   font = wezterm.font_with_fallback {
-    'Fira Code',
+    'Monaspace Argon',
     'Teminess Nerd Font',
   },
   font_size = 14,

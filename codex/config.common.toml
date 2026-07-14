@@ -1,4 +1,4 @@
-model = "gpt-5.4"
+model = "gpt-5.5"
 personality = "pragmatic"
 notify = ["bash", "-lc", "~/.codex/notify.sh \"$1\"", "--"]
 
@@ -13,3 +13,6 @@ sandbox_mode = "workspace-write"
 [profiles.ro]
 approval_policy = "never"
 sandbox_mode = "read-only"
+
+[features]
+hooks = true

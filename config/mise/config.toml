@@ -1,8 +1,9 @@
 [tools]
-go = "1.23.2"
+go = "1.25.11"
 python = "3.13.0"
-node = "22"
-terraform = "latest"
+node = "22.15.1"
+terraform = "1.15.6"
+uv = "latest"
 
 [settings]
 legacy_version_file_disable_tools = ["terraform", "packer"]

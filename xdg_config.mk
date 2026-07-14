@@ -2,6 +2,7 @@
 .PHONY: cmux
 cmux: | $(XDG_CONFIG_HOME)/cmux
 	@$(LINK_CMD) SRC='config/cmux/settings.json' DEST='$(XDG_CONFIG_HOME)/cmux/settings.json'
+	@$(LINK_CMD) SRC='config/cmux/cmux.json' DEST='$(XDG_CONFIG_HOME)/cmux/cmux.json'
 
 $(XDG_CONFIG_HOME)/cmux:
 	@$(CREATE_TARGET_DIR)
