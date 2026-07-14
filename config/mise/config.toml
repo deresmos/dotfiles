@@ -1,9 +1,12 @@
 [tools]
-go = "1.25.11"
+go = "1.25"
 python = "3.13.0"
 node = "22.15.1"
 terraform = "1.15.6"
 uv = "latest"
+flutter = "3.24.3"
+java = "19"
+pinact = "latest"
 
 [settings]
 legacy_version_file_disable_tools = ["terraform", "packer"]

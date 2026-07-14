@@ -136,9 +136,15 @@ scripts: | $(HOME)/.local/bin
 	@chmod a+x $(CURDIR)/scripts/agent-with-worktree.sh
 	@$(LINK_CMD) SRC='scripts/agent-with-worktree.sh' DEST='$(HOME)/.local/bin/agent-with-worktree'
 
+# skills
+.PHONY: skills
+skills:
+	@chmod a+x $(CURDIR)/agents/link_skills.sh
+	@$(CURDIR)/agents/link_skills.sh
+
 # claude
 .PHONY: claude
-claude: | $(HOME)/.claude $(HOME)/.claude/hooks
+claude: skills | $(HOME)/.claude $(HOME)/.claude/hooks
 	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
 	@$(LINK_CMD) SRC='claude/hooks.sh' DEST='$(HOME)/.claude/hooks.sh'
 	@chmod a+x $(CURDIR)/claude/hooks/create-worktree.sh
@@ -156,7 +162,7 @@ $(HOME)/.claude/hooks:
 
 # codex
 .PHONY: codex
-codex: | $(HOME)/.codex $(HOME)/.local/bin
+codex: skills | $(HOME)/.codex $(HOME)/.local/bin
 	@chmod a+x $(CURDIR)/codex/notify.sh
 	@$(LINK_CMD) SRC='codex/notify.sh' DEST='$(HOME)/.codex/notify.sh'
 	@$(LINK_CMD) SRC='codex/codex-worktree.sh' DEST='$(HOME)/.local/bin/codex-worktree'

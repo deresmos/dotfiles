@@ -406,10 +406,12 @@ if [ -f "$HOME/.zshrc_local" ]; then source "$HOME/.zshrc_local"; fi
 [ -f ~/.cargo/env ] && source ~/.cargo/env
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/deresmos/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/deresmos/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '/Users/deresmos/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/deresmos/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+PATH="/opt/homebrew/opt/gnu-tar/libexec/gnubin:$PATH"
 
 [ -f ~/.cargo/env ] && source ~/.cargo/env
 
