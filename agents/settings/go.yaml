@@ -1,0 +1,10 @@
+agent_settings: true
+sandbox:
+  filesystem:
+    allowWrite:
+      - ~/go/pkg/mod
+      - ~/Library/Caches/go-build
+  network:
+    allowedDomains:
+      - proxy.golang.org
+      - sum.golang.org

@@ -7,6 +7,7 @@ uv = "latest"
 flutter = "3.24.3"
 java = "19"
 pinact = "latest"
+betterleaks = "1.10.1"
 
 [settings]
 legacy_version_file_disable_tools = ["terraform", "packer"]

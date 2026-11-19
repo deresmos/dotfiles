@@ -8,3 +8,11 @@ polybar/pulseaudio-rofi.sh
 sxiv-code
 claude/settings.local.json
 codex/config.local.toml
+
+# machine-local agent skills
+agents/skills/local/*
+!agents/skills/local/.gitkeep
+
+# machine-local agent settings presets
+agents/settings/local/*
+!agents/settings/local/.gitkeep

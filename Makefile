@@ -142,51 +142,41 @@ skills:
 	@chmod a+x $(CURDIR)/agents/link_skills.sh
 	@$(CURDIR)/agents/link_skills.sh
 
+# agents (claude / codex 共通: skills・通知スクリプト・settings)
+# settings は agents/settings/*.yaml を ~/.claude/settings.json と ~/.codex/ へ追記する (既存値は変更しない)
+.PHONY: agents
+agents: skills | $(HOME)/.claude $(HOME)/.codex
+	@chmod a+x $(CURDIR)/agents/notify.sh $(CURDIR)/agents/agent_settings.py
+	@$(LINK_CMD) SRC='agents/notify.sh' DEST='$(HOME)/.claude/hooks.sh'
+	@$(LINK_CMD) SRC='agents/notify.sh' DEST='$(HOME)/.codex/notify.sh'
+	@for f in $(HOME)/.claude/settings.json $(HOME)/.codex/config.toml $(HOME)/.codex/hooks.json; do \
+		[ -L $$f ] && rm $$f; true; done
+	@$(CURDIR)/agents/agent_settings.py -s user -y
+
+.PHONY: agents-diff
+agents-diff:
+	@$(CURDIR)/agents/agent_settings.py -s user -n
+	@echo "== YAML に無い ~/.claude/settings.json の設定 =="
+	@$(CURDIR)/agents/agent_settings.py -s user -x
+
 # claude
 .PHONY: claude
-claude: skills | $(HOME)/.claude $(HOME)/.claude/hooks
-	@$(LINK_CMD) SRC='claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
-	@$(LINK_CMD) SRC='claude/hooks.sh' DEST='$(HOME)/.claude/hooks.sh'
-	@chmod a+x $(CURDIR)/claude/hooks/create-worktree.sh
-	@chmod a+x $(CURDIR)/claude/hooks/remove-worktree.sh
-	@$(LINK_CMD) SRC='claude/hooks/create-worktree.sh' DEST='$(HOME)/.claude/hooks/create-worktree.sh'
-	@$(LINK_CMD) SRC='claude/hooks/remove-worktree.sh' DEST='$(HOME)/.claude/hooks/remove-worktree.sh'
-	@chmod a+x $(CURDIR)/claude/build-settings.sh
-	@$(CURDIR)/claude/build-settings.sh
+claude: agents | $(HOME)/.claude/hooks
+	@$(LINK_CMD) SRC='agents/claude/statusline.sh' DEST='$(HOME)/.claude/statusline.sh'
+	@chmod a+x $(CURDIR)/agents/claude/hooks/sandbox-chain-detector.py
+	@$(LINK_CMD) SRC='agents/claude/hooks/sandbox-chain-detector.py' DEST='$(HOME)/.claude/hooks/sandbox-chain-detector.py'
 
-$(HOME)/.claude:
-	@$(CREATE_TARGET_DIR)
-
-$(HOME)/.claude/hooks:
+$(HOME)/.claude $(HOME)/.claude/hooks:
 	@$(CREATE_TARGET_DIR)
 
 # codex
 .PHONY: codex
-codex: skills | $(HOME)/.codex $(HOME)/.local/bin
-	@chmod a+x $(CURDIR)/codex/notify.sh
-	@$(LINK_CMD) SRC='codex/notify.sh' DEST='$(HOME)/.codex/notify.sh'
-	@$(LINK_CMD) SRC='codex/codex-worktree.sh' DEST='$(HOME)/.local/bin/codex-worktree'
-	@$(LINK_CMD) SRC='codex/codex-worktree-rm.sh' DEST='$(HOME)/.local/bin/codex-worktree-rm'
-	@$(LINK_CMD) SRC='codex/hooks.json' DEST='$(HOME)/.codex/hooks.json'
-	@$(LINK_CMD) SRC='codex/cmux-codex-hook.sh' DEST='$(HOME)/.codex/cmux-codex-hook.sh'
-	@chmod a+x $(CURDIR)/codex/build-config.sh
-	@$(CURDIR)/codex/build-config.sh
+codex: agents
+	@chmod a+x $(CURDIR)/agents/codex/cmux-codex-hook.sh
+	@$(LINK_CMD) SRC='agents/codex/cmux-codex-hook.sh' DEST='$(HOME)/.codex/cmux-codex-hook.sh'
 
-$(HOME)/.codex:
+$(HOME)/.codex $(HOME)/.local/bin:
 	@$(CREATE_TARGET_DIR)
-
-$(HOME)/.local/bin:
-	@$(CREATE_TARGET_DIR)
-
-.PHONY: codex-diff
-codex-diff:
-	@chmod a+x $(CURDIR)/codex/diff-config.sh
-	@$(CURDIR)/codex/diff-config.sh
-
-.PHONY: claude-diff
-claude-diff:
-	@chmod a+x $(CURDIR)/claude/diff-settings.sh
-	@$(CURDIR)/claude/diff-settings.sh
 
 FORCE:
 .PHONY: FORCE clean
