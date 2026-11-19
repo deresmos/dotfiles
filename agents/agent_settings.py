@@ -3,7 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pyyaml", "tomlkit"]
 # ///
-"""プロジェクトの Claude Code / Codex の設定へ、YAML 定義を追記する。
+"""プロジェクトの Claude Code / Codex の設定へ、YAML 定義を追記 (-r で洗い替え) する。
 
 - 既に同じ設定があれば SKIP、無いものだけ追加 (既存の値は変更しない)
 - 先に書き込み先と差分を表示し、確認 (y) を取ってから書き込む
@@ -46,6 +46,11 @@ Codex への変換:
   codex:                        -> config.toml
   上記以外のキーは Claude のみ (無視した内容は表示)
 
+洗い替え (-r / --replace):
+  追記ではなく、対象ファイルを YAML から生成した内容で丸ごと置き換える (YAML に無い既存設定は消える)。
+  削除される項目は `- ` で表示してから確認を取る。YAML 由来の設定が無い対象ファイル
+  (例: Codex の hooks.json / rules) は触らない。
+
 逆方向 (適用先にあって YAML に無い設定の抽出, Claude のみ):
   agent_settings.py -x -s user           # ~/.claude/settings.json のうち settings/ に無いものを YAML で表示
 
@@ -56,6 +61,7 @@ usage:
   agent_settings.py go.yaml              # 拡張子付きでも可 (settings/go.yaml だけ)
   agent_settings.py common go            # common も欲しいときは明示する
   agent_settings.py -y                   # 確認なしで書き込み
+  agent_settings.py -r -n                # 洗い替え (YAML に無い既存設定は削除) の差分だけ確認
   agent_settings.py all -d ./            # カレントの YAML のうち `agent_settings: true` があるものだけ
   agent_settings.py -d ./podman.yml      # ディレクトリではなく YAML ファイル 1 つだけを適用 (マーカー不要)
   agent_settings.py -d ~/x/settings -w ~/proj -s local -t claude
@@ -64,6 +70,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import difflib
 import json
 import re
 import shlex
@@ -165,6 +172,7 @@ class Plan:
     added: list[str] = field(default_factory=list)
     skipped: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    removed: list[str] = field(default_factory=list)  # 洗い替え時に消える項目
     new_text: str | None = None  # 追加があるときだけ書き込み内容が入る
 
 
@@ -278,6 +286,29 @@ def dump_json(data: dict) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
+def flatten(tree, prefix: str = "") -> list[str]:
+    """extract_extra の結果などを 1 項目 1 行の表示用文字列にする。"""
+    out: list[str] = []
+    if isinstance(tree, dict):
+        for k, v in tree.items():
+            out += flatten(v, f"{prefix}.{k}" if prefix else str(k))
+    elif isinstance(tree, list):
+        out += [f"{prefix}: {json.dumps(x, ensure_ascii=False, default=str)}" for x in tree]
+    elif tree is not None:
+        out.append(f"{prefix} = {tree!r}")
+    return out
+
+
+def finish_replace(plan: Plan, old, fresh, render) -> Plan:
+    """洗い替え: old (既存) と fresh (YAML のみから生成) の差分を added / removed にし、変更があれば render() を書き込み内容にする。"""
+    plan.added = flatten(extract_extra(fresh, old))
+    plan.removed = flatten(extract_extra(old, fresh))
+    plan.skipped = []
+    if plan.added or plan.removed:
+        plan.new_text = render()
+    return plan
+
+
 # ---------- Claude ----------
 def claude_view(want: dict) -> dict:
     """Claude に適用する内容: 共通部分 (codex / claude 以外) に claude: の中身を重ねたもの。"""
@@ -288,10 +319,13 @@ def claude_view(want: dict) -> dict:
     return out
 
 
-def plan_claude(path: Path, want: dict) -> Plan:
+def plan_claude(path: Path, want: dict, replace: bool = False) -> Plan:
     plan = Plan("claude", path)
-    data = read_json(path)
+    old = read_json(path)
+    data = {} if replace else old
     merge_into(data, claude_view(want), plan)
+    if replace:
+        return finish_replace(plan, old, data, lambda: dump_json(data))
     if plan.added:
         plan.new_text = dump_json(data)
     return plan
@@ -314,7 +348,7 @@ def codex_unsupported(want: dict) -> list[str]:
     return out
 
 
-def plan_codex_config(path: Path, want: dict) -> Plan:
+def plan_codex_config(path: Path, want: dict, replace: bool = False) -> Plan:
     plan = Plan("codex", path)
     cw = copy.deepcopy(want.get("codex") or {})
     cw.pop("hooks", None)  # codex.hooks は hooks.json 側 (plan_codex_hooks) で扱う
@@ -326,7 +360,8 @@ def plan_codex_config(path: Path, want: dict) -> Plan:
         return plan
     text = path.read_text() if path.exists() else ""
     try:
-        doc = tomlkit.parse(text)
+        old = tomlkit.parse(text).unwrap()
+        doc = tomlkit.document() if replace else tomlkit.parse(text)
     except Exception as e:
         sys.exit(f"error: {path} が不正な TOML です ({e})")
     if roots:  # 新規作成時に複数行配列で書くため先に作っておく
@@ -336,20 +371,25 @@ def plan_codex_config(path: Path, want: dict) -> Plan:
             arr.multiline(True)
             t["writable_roots"] = arr
     merge_into(doc, cw, plan)
+    if replace:
+        return finish_replace(plan, old, doc.unwrap(), lambda: tomlkit.dumps(doc))
     if plan.added:
         plan.new_text = tomlkit.dumps(doc)
     return plan
 
 
-def plan_codex_hooks(path: Path, want: dict) -> Plan | None:
+def plan_codex_hooks(path: Path, want: dict, replace: bool = False) -> Plan | None:
     shared, only = want.get("hooks"), (want.get("codex") or {}).get("hooks")
     if not shared and not only:
         return None
     plan = Plan("codex", path)
-    data = read_json(path)
+    old = read_json(path)
+    data = {} if replace else old
     for h in (shared, only):  # 共通 hooks の後に codex 専用 hooks を重ねる
         if h:
             merge_into(data, {"hooks": h}, plan)
+    if replace:
+        return finish_replace(plan, old, data, lambda: dump_json(data))
     if plan.added:
         plan.new_text = dump_json(data)
     return plan
@@ -370,7 +410,7 @@ def bash_tokens(rule: str) -> list[str] | None:
     return shlex.split(body)
 
 
-def plan_codex_rules(path: Path, want: dict) -> Plan | None:
+def plan_codex_rules(path: Path, want: dict, replace: bool = False) -> Plan | None:
     perms = want.get("permissions") or {}
     if not any(perms.get(d) for d in DECISIONS):
         return None
@@ -383,6 +423,9 @@ def plan_codex_rules(path: Path, want: dict) -> Plan | None:
             existing[tuple(json.loads(m.group(1)))] = m.group(2)
         except (json.JSONDecodeError, TypeError):
             pass
+    prev = dict(existing)
+    if replace:  # 既存ルールは破棄し、YAML 由来だけで作り直す
+        existing, text = {}, ""
     lines = []
     for d in DECISIONS:
         for rule in perms.get(d) or []:
@@ -400,17 +443,21 @@ def plan_codex_rules(path: Path, want: dict) -> Plan | None:
             existing[key] = cd
             lines.append(f'prefix_rule(pattern={json.dumps(toks, ensure_ascii=False)}, decision="{cd}")')
             plan.added.append(f"{cd}: {' '.join(toks)}")
+    if replace:
+        fresh = {" ".join(k): v for k, v in existing.items()}
+        old = {" ".join(k): v for k, v in prev.items()}
+        return finish_replace(plan, old, fresh, lambda: "".join(l + "\n" for l in lines))
     if lines:
         sep = "" if not text or text.endswith("\n") else "\n"
         plan.new_text = text + sep + "\n".join(lines) + "\n"
     return plan
 
 
-def plans_codex(scope: str, ws: Path, want: dict) -> list[Plan]:
+def plans_codex(scope: str, ws: Path, want: dict, replace: bool = False) -> list[Plan]:
     root = {"user": Path.home(), "workspace": ws}[scope] / ".codex"
-    plans = [plan_codex_config(root / "config.toml", want),
-             plan_codex_hooks(root / "hooks.json", want),
-             plan_codex_rules(root / "rules" / "default.rules", want)]
+    plans = [plan_codex_config(root / "config.toml", want, replace),
+             plan_codex_hooks(root / "hooks.json", want, replace),
+             plan_codex_rules(root / "rules" / "default.rules", want, replace)]
     plans = [p for p in plans if p is not None]
     un = codex_unsupported(want)
     if un and plans:
@@ -427,11 +474,34 @@ def claude_path(scope: str, ws: Path) -> Path:
 
 
 # ---------- 表示 / 実行 ----------
-def show(plans: list[Plan]) -> None:
+def show_diff(p: Plan) -> None:
+    """ファイル全体の unified diff を表示する (どの行が消える / 増えるかが分かる)。"""
+    old = p.path.read_text() if p.path.exists() else ""
+    if p.path.suffix == ".json":  # 整形の違いでノイズが出ないよう、書き込み時と同じ整形に揃える
+        try:
+            old = dump_json(read_json(p.path)) if old.strip() else ""
+        except SystemExit:
+            pass
+    color = sys.stdout.isatty()
+    paint = {"-": "\033[31m", "+": "\033[32m", "@": "\033[36m"}
+    for line in difflib.unified_diff(old.splitlines(), (p.new_text or "").splitlines(),
+                                     "現在", "適用後", lineterm="", n=2):
+        c = paint.get(line[:1], "") if color else ""
+        print(f"  {c}{line}{chr(27) + '[0m' if c else ''}")
+
+
+def show(plans: list[Plan], replace: bool = False) -> None:
     for p in plans:
-        print(f"[{p.target}] {p.path}  ({'変更あり' if p.new_text else '変更なし'})")
+        print(f"[{p.target}] {p.path}  ({'変更あり' if p.new_text is not None else '変更なし'})")
+        if replace and p.new_text is not None:
+            show_diff(p)
+            for n in p.notes:
+                print(f"  ! {n}")
+            continue
         for a in p.added:
             print(f"  + {a}")
+        for r in p.removed:
+            print(f"  - {r}")
         for s in p.skipped:
             print(f"  = SKIP (既存) {s}")
         for n in p.notes:
@@ -453,7 +523,11 @@ def merge_presets(files: list[Path]) -> dict:
 # ---------- 逆方向: 適用先にあって YAML に無いものを抽出 ----------
 def extract_extra(cur, want, key: str = ""):
     """cur のうち want に含まれない部分を返す (無ければ None)。マージ規則は merge_into と対応させている。"""
-    if key == "hooks":
+    if key == "hooks" and isinstance(cur, dict) and all(
+            isinstance(gs, list) and all(isinstance(g, dict) and isinstance(g.get("hooks", []), list)
+                                         and all(isinstance(h, dict) for h in g.get("hooks", []))
+                                         for g in gs)
+            for gs in cur.values()):  # Claude 形式の hooks だけ専用処理 (config.toml の hooks などは汎用処理へ)
         out = {}
         for event, groups in (cur or {}).items():
             wgroups = (want or {}).get(event) or []
@@ -512,6 +586,8 @@ def main() -> None:
     ap.add_argument("-t", "--target", choices=(*TARGETS, "all"), default="all")
     ap.add_argument("-x", "--extract", action="store_true",
                     help="逆方向: 適用先 (Claude の settings.json) にあって YAML に無い設定を YAML 形式で表示する (書き込みなし)")
+    ap.add_argument("-r", "--replace", action="store_true",
+                    help="洗い替え: 追記ではなく、対象ファイルを YAML 由来の内容で置き換える (YAML に無い既存設定は消える)")
     ap.add_argument("-n", "--dry-run", action="store_true", help="表示のみで書き込まない")
     ap.add_argument("-y", "--yes", action="store_true", help="確認なしで書き込む")
     a = ap.parse_args()
@@ -538,6 +614,8 @@ def main() -> None:
         sys.exit("error: 追加する設定がありません")
 
     ws = a.workspace_dir.expanduser().resolve()
+    if a.extract and a.replace:
+        sys.exit("error: --extract と --replace は同時に指定できません")
     if a.extract:
         if a.target == "codex":
             sys.exit("error: --extract は Claude のみ対応です")
@@ -548,14 +626,14 @@ def main() -> None:
     for scope in dict.fromkeys(a.scope or ["workspace"]):
         for t in targets:
             if t == "claude":
-                plans.append(plan_claude(claude_path(scope, ws), want))
+                plans.append(plan_claude(claude_path(scope, ws), want, a.replace))
             elif scope == "local":
                 print("[codex] scope=local は未対応のためスキップ")
             else:
-                plans += plans_codex(scope, ws, want)
+                plans += plans_codex(scope, ws, want, a.replace)
 
     print()
-    show(plans)
+    show(plans, a.replace)
     todo = [p for p in plans if p.new_text is not None]
     if not todo:
         print("\n追加する設定はありません")
@@ -566,7 +644,8 @@ def main() -> None:
     if not a.yes:
         if not sys.stdin.isatty():
             sys.exit("\nerror: 非対話環境です。-y で書き込むか -n で確認だけにしてください")
-        if input(f"\n上記 {len(todo)} ファイルへ書き込みますか? [y/N] ").strip().lower() not in ("y", "yes"):
+        what = "洗い替え (YAML に無い既存設定は削除)" if a.replace else "書き込み"
+        if input(f"\n上記 {len(todo)} ファイルへ{what}しますか? [y/N] ").strip().lower() not in ("y", "yes"):
             print("中止しました")
             return
     for p in todo:

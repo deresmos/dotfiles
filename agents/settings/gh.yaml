@@ -1,0 +1,21 @@
+agent_settings: true
+sandbox:
+  excludeCommands:
+    - gh pr view:*
+    - gh pr list:*
+    - gh pr diff:*
+    - gh pr checks:*
+    - gh pr status:*
+    - gh issue view:*
+    - gh issue list:*
+    - gh issue status:*
+    - gh run view:*
+    - gh run list:*
+    - gh workflow view:*
+    - gh workflow list:*
+    - gh release view:*
+    - gh release list:*
+    - gh repo view:*
+    - gh label list:*
+    - gh search:*
+    - gh auth status

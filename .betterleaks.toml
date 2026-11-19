@@ -1,0 +1,10 @@
+title = "dotfiles betterleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-webhook-url"
+description = "webhook という名前の変数に代入された URL"
+regex = '''(?i)[\w.-]*webhook[\w.-]*\s*[=:]\s*['"]?(https?://[^\s'"]+)'''
+keywords = ["webhook"]

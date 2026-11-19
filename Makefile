@@ -159,6 +159,18 @@ agents-diff:
 	@echo "== YAML に無い ~/.claude/settings.json の設定 =="
 	@$(CURDIR)/agents/agent_settings.py -s user -x
 
+# hooks 等のテスト
+.PHONY: test-agents
+test-agents:
+	@python3 -m unittest discover -s $(CURDIR)/agents/claude/hooks/tests -v
+
+# git pre-commit (betterleaks でシークレット検出)
+.PHONY: githooks
+githooks:
+	@chmod a+x $(CURDIR)/.githooks/pre-commit
+	@git -C $(CURDIR) config core.hooksPath .githooks
+	@echo "core.hooksPath = .githooks"
+
 # claude
 .PHONY: claude
 claude: agents | $(HOME)/.claude/hooks
