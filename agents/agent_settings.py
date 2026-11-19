@@ -7,9 +7,11 @@
 
 - 既に同じ設定があれば SKIP、無いものだけ追加 (既存の値は変更しない)
 - 先に書き込み先と差分を表示し、確認 (y) を取ってから書き込む
-- 複数のプリセット (settings/<name>.yaml) は 1 つにまとめる。省略時は設定ディレクトリのうち、
-  最上位に `agent_settings: true` を書いた YAML すべて (無関係な YAML を巻き込まないための印)
-- settings/common.yaml は常に含まれる共通設定 (プリセット名を指定しても自動追加。除外は --no-common)
+- 複数のプリセット (settings/<name>.yaml) は 1 つにまとめる
+- 省略時 (default) は settings/common.yaml と settings/local/common.yaml だけ (あるものだけ)
+- `all` を指定すると設定ディレクトリのうち、最上位に `agent_settings: true` を書いた YAML すべて
+  (無関係な YAML を巻き込まないための印)
+- 名前 (go / go.yaml) を指定したら、そのファイルだけ (common は自動追加しない)
 
 YAML は Claude Code の settings.json と同じ構造で書く:
   agent_settings: true     # プリセットの印 (ディレクトリ走査の対象にする。設定には出力されない)
@@ -48,10 +50,13 @@ Codex への変換:
   agent_settings.py -x -s user           # ~/.claude/settings.json のうち settings/ に無いものを YAML で表示
 
 usage:
-  agent_settings.py                      # settings/ 内の全 YAML を cwd へ
+  agent_settings.py                      # common.yaml (+ local/common.yaml) だけを cwd へ
+  agent_settings.py all                  # settings/ 内の全 YAML を cwd へ
   agent_settings.py flutter go -n        # 指定分だけ、dry-run
+  agent_settings.py go.yaml              # 拡張子付きでも可 (settings/go.yaml だけ)
+  agent_settings.py common go            # common も欲しいときは明示する
   agent_settings.py -y                   # 確認なしで書き込み
-  agent_settings.py -d ./                # カレントの YAML のうち `agent_settings: true` があるものだけ
+  agent_settings.py all -d ./            # カレントの YAML のうち `agent_settings: true` があるものだけ
   agent_settings.py -d ./podman.yml      # ディレクトリではなく YAML ファイル 1 つだけを適用 (マーカー不要)
   agent_settings.py -d ~/x/settings -w ~/proj -s local -t claude
 """
@@ -111,10 +116,13 @@ def collect_presets(base: Path) -> list[Path]:
 
 def find_preset(name: str, base: Path) -> Path:
     p = Path(name).expanduser()
-    if p.suffix in (".yaml", ".yml") and p.is_file():
+    has_ext = p.suffix in (".yaml", ".yml")
+    if has_ext and p.is_file():
         return p
+    # `go` でも `go.yaml` でも settings/ (または settings/local/) の該当ファイルだけを指せる
+    exts = ("",) if has_ext else (".yaml", ".yml")
     for d in (base, base / LOCAL_DIRNAME):
-        for ext in (".yaml", ".yml"):
+        for ext in exts:
             c = d / f"{name}{ext}"
             if c.is_file():
                 return c
@@ -492,17 +500,16 @@ def run_extract(scopes: list[str], ws: Path, want: dict) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("presets", nargs="*",
-                    help="プリセット名 (settings/<name>.yaml) または YAML のパス。省略時は設定ディレクトリの全 YAML")
+                    help="プリセット名 (settings/<name>.yaml) または YAML のパス。`all` で設定ディレクトリの全 YAML。\n省略時は common.yaml と local/common.yaml だけ")
     ap.add_argument("-d", "--settings-dir", type=Path, default=DEFAULT_DIR,
                     help=f"プリセットのあるディレクトリ、または YAML ファイル (default: {DEFAULT_DIR})\n"
                          f"ディレクトリは最上位に `{MARKER}: true` のある YAML だけが対象。\n"
-                         "ファイルを指定した場合はマーカー不要でそのファイルだけを適用する (common.yaml の自動追加も無効)")
+                         "ファイルを指定した場合はマーカー不要でそのファイルだけを適用する")
     ap.add_argument("-w", "--workspace-dir", type=Path, default=Path.cwd(), help="対象プロジェクト (default: cwd)")
     ap.add_argument("-s", "--scope", choices=SCOPES, action="append",
                     help="workspace(.claude/settings.json) / local(settings.local.json, Claude のみ) / user。"
                          "複数指定可 (default: workspace)")
     ap.add_argument("-t", "--target", choices=(*TARGETS, "all"), default="all")
-    ap.add_argument("--no-common", action="store_true", help="common.yaml を自動追加しない")
     ap.add_argument("-x", "--extract", action="store_true",
                     help="逆方向: 適用先 (Claude の settings.json) にあって YAML に無い設定を YAML 形式で表示する (書き込みなし)")
     ap.add_argument("-n", "--dry-run", action="store_true", help="表示のみで書き込まない")
@@ -514,15 +521,18 @@ def main() -> None:
         if a.presets:
             sys.exit("error: -d にファイルを指定した場合、プリセット名は指定できません")
         files = [base]
-    elif a.presets:
-        files = [find_preset(n, base) for n in a.presets]
-        common = next((c for e in (".yaml", ".yml") if (c := base / f"common{e}").is_file()), None)
-        if common and not a.no_common and common not in files:
-            files.insert(0, common)
-    else:
+    elif "all" in a.presets:
         files = collect_presets(base)
         if not files:
             sys.exit(f"error: {base} に `{MARKER}: true` のある YAML がありません")
+    elif a.presets:
+        files = [find_preset(n, base) for n in a.presets]
+    else:  # default: common.yaml と local/common.yaml だけ (存在するもの)
+        files = [c for d in (base, base / LOCAL_DIRNAME) for e in (".yaml", ".yml")
+                 if (c := d / f"common{e}").is_file()]
+        if not files:
+            sys.exit(f"error: {base} に common.yaml / {LOCAL_DIRNAME}/common.yaml がありません "
+                     "(全 YAML は `all`、個別は名前で指定)")
     want = merge_presets(files)
     if not want:
         sys.exit("error: 追加する設定がありません")
